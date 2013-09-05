@@ -58,3 +58,5 @@ Native SH call bridge
 Native SH call bridge is written by
 Shin-ichiro KAWASAKI <shinichiro.kawasaki.mg@hitachi.com>
 and Contributed to Android by Hitachi, Ltd. and Renesas Solutions Corp.
+
+
