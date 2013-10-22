@@ -738,6 +738,7 @@ GOTO_TARGET_DECL(exceptionThrown);
     HANDLE_OPCODE(_opcode /*vA, vB, +CCCC*/)                                \
         vsrc1 = INST_A(inst);                                               \
         vsrc2 = INST_B(inst);                                               \
+        ALOGE("testing jikk");                                              \
         if ((s4) GET_REGISTER(vsrc1) _cmp (s4) GET_REGISTER(vsrc2)) {       \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
             ILOGV("|if-%s v%d,v%d,+0x%04x", (_opname), vsrc1, vsrc2,        \
