@@ -740,7 +740,7 @@ GOTO_TARGET_DECL(exceptionThrown);
         vsrc2 = INST_B(inst);                                               \
         if ((s4) GET_REGISTER(vsrc1) _cmp (s4) GET_REGISTER(vsrc2)) {       \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
-            TLOGE("JIKK: if-%s: > ", _opname);                              \
+            TLOGE("JIKK| if-%s| > ", _opname);                              \
             ILOGV("|if-%s v%d,v%d,+0x%04x", (_opname), vsrc1, vsrc2,        \
                 branchOffset);                                              \
             ILOGV("> branch taken");                                        \
@@ -748,7 +748,7 @@ GOTO_TARGET_DECL(exceptionThrown);
                 PERIODIC_CHECKS(branchOffset);                              \
             FINISH(branchOffset);                                           \
         } else {                                                            \
-            TLOGE("JIKK: if-%s: < ", _opname);                              \
+            TLOGE("JIKK| if-%s| < ", _opname);                              \
             ILOGV("|if-%s v%d,v%d,-", (_opname), vsrc1, vsrc2);             \
             FINISH(2);                                                      \
         }
@@ -758,14 +758,14 @@ GOTO_TARGET_DECL(exceptionThrown);
         vsrc1 = INST_AA(inst);                                              \
         if ((s4) GET_REGISTER(vsrc1) _cmp 0) {                              \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
-            TLOGE("JIKK: if-%s: > ", _opname);                              \
+            TLOGE("JIKK| if-%s| > ", _opname);                              \
             ILOGV("|if-%s v%d,+0x%04x", (_opname), vsrc1, branchOffset);    \
             ILOGV("> branch taken");                                        \
             if (branchOffset < 0)                                           \
                 PERIODIC_CHECKS(branchOffset);                              \
             FINISH(branchOffset);                                           \
         } else {                                                            \
-            TLOGE("JIKK: if-%s: < ", _opname);                              \
+            TLOGE("JIKK| if-%s| < ", _opname);                              \
             ILOGV("|if-%s v%d,-", (_opname), vsrc1);                        \
             FINISH(2);                                                      \
         }
