@@ -161,6 +161,28 @@ static const char kSpacing[] = "            ";
 # define TLOGE(...) ((void)0)
 #endif
 
+#ifdef WITH_TAINT_MEASURE
+# define TMLOGD(...) TMLOG(LOG_DEBUG, __VA_ARGS__)
+# define TMLOGV(...) TMLOG(LOG_VERBOSE, __VA_ARGS__)
+# define TMLOGW(...) TMLOG(LOG_WARN, __VA_ARGS__)
+# define TMLOGE(...) TMLOG(LOG_ERROR, __VA_ARGS__)
+# define TMLOG(_level, ...) do {                                             \
+  char debugStrBuf[128];                                              \
+  snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);            \
+  if (curMethod != NULL)                                              \
+    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                \
+	 self->threadId, (int)(pc - curMethod->insns), curMethod->clazz->descriptor, curMethod->name, debugStrBuf); \
+  else                                                                \
+    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                       \
+	 self->threadId, debugStrBuf);                               \
+  } while(false)
+#else
+# define TMLOGD(...) ((void)0)
+# define TMLOGV(...) ((void)0)
+# define TMLOGW(...) ((void)0)
+# define TMLOGE(...) ((void)0)
+#endif
+
 /* get a long from an array of u4 */
 static inline s8 getLongFromArray(const u4* ptr, int idx)
 {
