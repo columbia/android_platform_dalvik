@@ -627,6 +627,7 @@ static void Dalvik_dalvik_system_Taint_addTaintFile(const u4* args,
     RETURN_VOID();
 }
 
+
 /*
  * public static void log(String msg)
  */
@@ -653,6 +654,34 @@ static void Dalvik_dalvik_system_Taint_log(const u4* args,
 
     RETURN_VOID();
 }
+
+/*
+ * public static void log(String msg)
+ */
+static void Dalvik_dalvik_system_TMeasure_log(const u4* args,
+    JValue* pResult)
+{
+    StringObject* msgObj = (StringObject*) args[0];
+    char *msg;
+
+    if (msgObj == NULL) {
+	dvmThrowNullPointerException("msgObj == NULL");
+	RETURN_VOID();
+    }
+
+	msg = dvmCreateCstrFromString(msgObj);
+	ALOG(LOG_WARN, "TMLog", "%s", msg);
+	char *curmsg = msg;
+	while(strlen(curmsg) > 1013)
+	{   
+		curmsg = curmsg+1013;
+		ALOG(LOG_WARN, "TMLog", "%s", curmsg);
+	}
+	free(msg);
+
+    RETURN_VOID();
+}
+
 
 /*
  * public static void logPathFromFd(int fd)
@@ -773,6 +802,8 @@ const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
         Dalvik_dalvik_system_Taint_addTaintFile},
     { "log",  "(Ljava/lang/String;)V",
         Dalvik_dalvik_system_Taint_log},
+    { "TMLog",  "(Ljava/lang/String;)V",
+        Dalvik_dalvik_system_TMeasure_log},
     { "logPathFromFd",  "(I)V",
         Dalvik_dalvik_system_Taint_logPathFromFd},
     { "logPeerFromFd",  "(I)V",
