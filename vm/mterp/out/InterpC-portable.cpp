@@ -169,22 +169,22 @@ static const char kSpacing[] = "            ";
 #endif
 
 #ifdef WITH_TAINT_MEASURE
+# define TMLOGX(...) ((void)0)
 # define TMLOGD(...) TMLOG(LOG_DEBUG, __VA_ARGS__)
 # define TMLOGV(...) TMLOG(LOG_VERBOSE, __VA_ARGS__)
 # define TMLOGW(...) TMLOG(LOG_WARN, __VA_ARGS__)
 # define TMLOGE(...) TMLOG(LOG_ERROR, __VA_ARGS__)
 # define TMLOG(_level, ...) do {                                             \
-        char debugStrBuf[128];                                              \
-        snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);            \
-        if (curMethod != NULL)                                              \
-            ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                \
-                self->threadId, (int)(pc - curMethod->insns), curMethod->clazz->descriptor, curMethod->name, debugStrBuf); \
-        else                                                                \
-            ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                       \
-                self->threadId, debugStrBuf);                               \
-    } while(false)
+  char debugStrBuf[128];                                              \
+  snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);            \
+  if (curMethod != NULL)                                              \
+    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                \
+	 self->threadId, (int)(pc - curMethod->insns), curMethod->clazz->descriptor, curMethod->name, debugStrBuf); \
+  else                                                                \
+    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                       \
+	 self->threadId, debugStrBuf);                               \
+  } while(false)
 #else
-# define TMLOGD(...) ((void)0)
 # define TMLOGV(...) ((void)0)
 # define TMLOGW(...) ((void)0)
 # define TMLOGE(...) ((void)0)
@@ -762,7 +762,7 @@ GOTO_TARGET_DECL(exceptionThrown);
         vsrc2 = INST_B(inst);                                               \
         if ((s4) GET_REGISTER(vsrc1) _cmp (s4) GET_REGISTER(vsrc2)) {       \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
-            TMLOGE("| if-%s| > ", _opname);                              \
+	    TMLOGE("| if-%s| > ", _opname);                                 \
             ILOGV("|if-%s v%d,v%d,+0x%04x", (_opname), vsrc1, vsrc2,        \
                 branchOffset);                                              \
             ILOGV("> branch taken");                                        \
@@ -770,7 +770,7 @@ GOTO_TARGET_DECL(exceptionThrown);
                 PERIODIC_CHECKS(branchOffset);                              \
             FINISH(branchOffset);                                           \
         } else {                                                            \
-            TMLOGE("| if-%s| < ", _opname);                                 \
+            TMLOGE("| if-%s| < ", _opname);		                    \
             ILOGV("|if-%s v%d,v%d,-", (_opname), vsrc1, vsrc2);             \
             FINISH(2);                                                      \
         }
@@ -780,7 +780,7 @@ GOTO_TARGET_DECL(exceptionThrown);
         vsrc1 = INST_AA(inst);                                              \
         if ((s4) GET_REGISTER(vsrc1) _cmp 0) {                              \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
-            TMLOGE("| if-%s| > ", _opname);                                 \
+            TMLOGE("| if-%s| > ", _opname);                                 \	    
             ILOGV("|if-%s v%d,+0x%04x", (_opname), vsrc1, branchOffset);    \
             ILOGV("> branch taken");                                        \
             if (branchOffset < 0)                                           \
@@ -4286,6 +4286,8 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
         //    methodCallRange, methodToCall, count, regs);
         //printf(" --> %s.%s %s\n", methodToCall->clazz->descriptor,
         //    methodToCall->name, methodToCall->shorty);
+
+	//TMLOGX("|%s", methodToCall->name);
 
         u4* outs;
         int i;
