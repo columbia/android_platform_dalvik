@@ -1903,6 +1903,10 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
     InterpSaveState interpSaveState;
     ExecutionSubModes savedSubModes;
 
+    extern char * __progname;
+    char* env;
+    env = getenv("AND_INSTRUMENT");
+
 #if defined(WITH_JIT)
     /* Target-specific save/restore */
     double calleeSave[JIT_CALLEE_SAVE_DOUBLE_COUNT];
@@ -1975,14 +1979,32 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
 
     typedef void (*Interpreter)(Thread*);
     Interpreter stdInterp;
-    if (gDvm.executionMode == kExecutionModeInterpFast)
-        stdInterp = dvmMterpStd;
+    if (gDvm.executionMode == kExecutionModeInterpFast) {
+
+        //jikk -- patch to force portable-interp for instrumentation  
+        if (strcmp(__progname, env) == 0) {
+          //ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)", 
+          //      __progname, method->clazz->descriptor, method->name, self->threadId);
+          
+          stdInterp = dvmInterpretPortable;
+        } else {
+          stdInterp = dvmMterpStd;
+        }
+
 #if defined(WITH_JIT)
-    else if (gDvm.executionMode == kExecutionModeJit)
-        stdInterp = dvmMterpStd;
+    } else if (gDvm.executionMode == kExecutionModeJit) {
+        //jikk -- patch to enforce portable-interp for instrumentation  
+        if (strcmp(__progname, env) == 0) {
+          //ALOGE("JIKK: setting interp:JIT --> interp:Portable for %s: %s, %s (tid: %d)", 
+          //      __progname, method->clazz->descriptor, method->name, self->threadId);
+          stdInterp = dvmInterpretPortable;
+        } else {
+          stdInterp = dvmMterpStd;
+        }
 #endif
-    else
+    } else {
         stdInterp = dvmInterpretPortable;
+    }
 
     // Call the interpreter
     (*stdInterp)(self);
