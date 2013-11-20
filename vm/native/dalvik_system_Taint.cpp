@@ -646,7 +646,7 @@ static void Dalvik_dalvik_system_Taint_log(const u4* args,
 	ALOG(LOG_WARN, "TaintLog", "%s", msg);
 	char *curmsg = msg;
 	while(strlen(curmsg) > 1013)
-	{   
+	{
 		curmsg = curmsg+1013;
 		ALOG(LOG_WARN, "TaintLog", "%s", curmsg);
 	}
@@ -665,19 +665,19 @@ static void Dalvik_dalvik_system_TMeasure_log(const u4* args,
     char *msg;
 
     if (msgObj == NULL) {
-	dvmThrowNullPointerException("msgObj == NULL");
-	RETURN_VOID();
+        dvmThrowNullPointerException("msgObj == NULL");
+        RETURN_VOID();
     }
 
-	msg = dvmCreateCstrFromString(msgObj);
-	ALOG(LOG_WARN, "TMLog", "%s", msg);
-	char *curmsg = msg;
-	while(strlen(curmsg) > 1013)
-	{   
-		curmsg = curmsg+1013;
-		ALOG(LOG_WARN, "TMLog", "%s", curmsg);
-	}
-	free(msg);
+    msg = dvmCreateCstrFromString(msgObj);
+    ALOG(LOG_WARN, "TMLog", "%s", msg);
+    char *curmsg = msg;
+    while(strlen(curmsg) > 1013)
+    {
+        curmsg = curmsg+1013;
+        ALOG(LOG_WARN, "TMLog", "%s", curmsg);
+    }
+    free(msg);
 
     RETURN_VOID();
 }
