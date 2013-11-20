@@ -22,6 +22,8 @@
 #ifndef _DALVIK_INTERP_TAINT
 #define _DALVIK_INTERP_TAINT
 
+#define WITH_TAINT_MEASURE
+
 /* The Taint structure */
 typedef struct Taint {
     u4 tag;
