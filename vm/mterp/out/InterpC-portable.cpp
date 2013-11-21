@@ -171,7 +171,6 @@ static const char kSpacing[] = "            ";
 #endif
 
 #ifdef WITH_TAINT_MEASURE
-# define TMLOGX(...) ((void)0)
 # define TMLOGD(...) TMLOG(LOG_DEBUG, __VA_ARGS__)
 # define TMLOGV(...) TMLOG(LOG_VERBOSE, __VA_ARGS__)
 # define TMLOGW(...) TMLOG(LOG_WARN, __VA_ARGS__)
@@ -179,20 +178,20 @@ static const char kSpacing[] = "            ";
 # define TMLOG(_level, ...) do {                                          \
   char debugStrBuf[128];                                                  \
   if (app_sz && !strncmp(curMethod->clazz->descriptor, app_name, app_sz)) \
-  {                                                                       \
-    snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);              \
-    if (curMethod != NULL)					          \
-      ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                   \
-	 self->threadId, (int)(pc - curMethod->insns),                    \
-	   curMethod->clazz->descriptor, curMethod->name, debugStrBuf);   \
-    else                                                                  \
-      ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                          \
-        self->threadId, debugStrBuf);                                     \
+    {                                                                     \
+  snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);                \
+  if (curMethod != NULL)                                                  \
+    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                     \
+      self->threadId, (int)(pc - curMethod->insns),                       \
+	 curMethod->clazz->descriptor, curMethod->name, debugStrBuf);     \
+  else                                                                    \
+    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                            \
+	 self->threadId, debugStrBuf);                                    \
     }                                                                     \
   } while(false)
 
 #else
-# define TMLOGX(...) ((void)0)
+# define TMLOGD(...) ((void)0)
 # define TMLOGV(...) ((void)0)
 # define TMLOGW(...) ((void)0)
 # define TMLOGE(...) ((void)0)
@@ -788,7 +787,7 @@ GOTO_TARGET_DECL(exceptionThrown);
         vsrc1 = INST_AA(inst);                                              \
         if ((s4) GET_REGISTER(vsrc1) _cmp 0) {                              \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
-            TMLOGE("| if-%s| > ", _opname);                                 \
+            TMLOGE("| if-%s| > ", _opname);                                 \	    
             ILOGV("|if-%s v%d,+0x%04x", (_opname), vsrc1, branchOffset);    \
             ILOGV("> branch taken");                                        \
             if (branchOffset < 0)                                           \
@@ -1458,7 +1457,6 @@ void dvmInterpretPortable(Thread* self)
     fp = self->interpSave.curFrame;
     retval = self->interpSave.retval;   /* only need for kInterpEntryReturn? */
 
-
 #ifdef WITH_TAINT_MEASURE
     //FIXME: This part is invoked for all all method calls from target application
     // I want to move this out to somewhere else e.g., Interp.cpp.
@@ -1475,11 +1473,11 @@ void dvmInterpretPortable(Thread* self)
     if (env) {
 
       for ( app_sz = 0 ; env[app_sz]!='\0' && app_sz < APP_NAME_SZ; app_sz++) {
-	if (env[app_sz] == '.') {
-	  tmp[app_sz] = '/';
-	} else {
-	  tmp[app_sz] = env[app_sz];
-	}
+        if (env[app_sz] == '.') {
+          tmp[app_sz] = '/';
+        } else {
+          tmp[app_sz] = env[app_sz];
+        }
       }
       tmp[app_sz] = '\0';
 
@@ -4324,8 +4322,6 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
         //    methodCallRange, methodToCall, count, regs);
         //printf(" --> %s.%s %s\n", methodToCall->clazz->descriptor,
         //    methodToCall->name, methodToCall->shorty);
-
-	//TMLOGX("|%s", methodToCall->name);
 
         u4* outs;
         int i;
