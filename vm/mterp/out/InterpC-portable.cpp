@@ -171,6 +171,7 @@ static const char kSpacing[] = "            ";
 #endif
 
 #ifdef WITH_TAINT_MEASURE
+# define TMLOGX(...) ((void)0)
 # define TMLOGD(...) TMLOG(LOG_DEBUG, __VA_ARGS__)
 # define TMLOGV(...) TMLOG(LOG_VERBOSE, __VA_ARGS__)
 # define TMLOGW(...) TMLOG(LOG_WARN, __VA_ARGS__)
@@ -191,6 +192,7 @@ static const char kSpacing[] = "            ";
   } while(false)
 
 #else
+# define TMLOGX(...) ((void)0)
 # define TMLOGD(...) ((void)0)
 # define TMLOGV(...) ((void)0)
 # define TMLOGW(...) ((void)0)
