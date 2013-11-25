@@ -21,6 +21,8 @@
 #include <math.h>                   // needed for fmod, fmodf
 #include "mterp/common/FindInterface.h"
 
+#include <string.h>
+
 /*
  * Configuration defines.  These affect the C implementations, i.e. the
  * portable interpreter(s) and C stubs.
@@ -162,21 +164,28 @@ static const char kSpacing[] = "            ";
 #endif
 
 #ifdef WITH_TAINT_MEASURE
+# define TMLOGX(...) ((void)0)
 # define TMLOGD(...) TMLOG(LOG_DEBUG, __VA_ARGS__)
 # define TMLOGV(...) TMLOG(LOG_VERBOSE, __VA_ARGS__)
 # define TMLOGW(...) TMLOG(LOG_WARN, __VA_ARGS__)
 # define TMLOGE(...) TMLOG(LOG_ERROR, __VA_ARGS__)
-# define TMLOG(_level, ...) do {                                             \
-  char debugStrBuf[128];                                              \
-  snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);            \
-  if (curMethod != NULL)                                              \
-    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                \
-	 self->threadId, (int)(pc - curMethod->insns), curMethod->clazz->descriptor, curMethod->name, debugStrBuf); \
-  else                                                                \
-    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                       \
-	 self->threadId, debugStrBuf);                               \
+# define TMLOG(_level, ...) do {                                          \
+  char debugStrBuf[128];                                                  \
+  if (app_sz && !strncmp(curMethod->clazz->descriptor, app_name, app_sz)) \
+    {                                                                     \
+  snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);                \
+  if (curMethod != NULL)                                                  \
+    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                     \
+      self->threadId, (int)(pc - curMethod->insns),                       \
+	 curMethod->clazz->descriptor, curMethod->name, debugStrBuf);         \
+  else                                                                    \
+    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                            \
+	 self->threadId, debugStrBuf);                                        \
+    }                                                                     \
   } while(false)
+
 #else
+# define TMLOGX(...) ((void)0)
 # define TMLOGD(...) ((void)0)
 # define TMLOGV(...) ((void)0)
 # define TMLOGW(...) ((void)0)
