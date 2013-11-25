@@ -34,6 +34,35 @@ void dvmInterpretPortable(Thread* self)
     pc = self->interpSave.pc;
     fp = self->interpSave.curFrame;
     retval = self->interpSave.retval;   /* only need for kInterpEntryReturn? */
+
+#ifdef WITH_TAINT_MEASURE
+    //FIXME: This part is invoked for all all method calls from target application
+    // I want to move this out to somewhere else e.g., Interp.cpp.
+    char* env;
+    env = getenv("AND_INSTRUMENT");
+
+    #define APP_NAME_SZ 256
+    char app_name[APP_NAME_SZ];
+    app_name[0] = 'L';
+    char* tmp = &app_name[1];
+
+    int app_sz = 0;
+
+    if (env) {
+
+      for ( app_sz = 0 ; env[app_sz]!='\0' && app_sz < APP_NAME_SZ; app_sz++) {
+        if (env[app_sz] == '.') {
+          tmp[app_sz] = '/';
+        } else {
+          tmp[app_sz] = env[app_sz];
+        }
+      }
+      tmp[app_sz] = '\0';
+
+      TMLOGV("APP_NAME:%s  %s",env,  app_name);
+    }
+#endif
+
 #ifdef WITH_TAINT_TRACKING
     rtaint = self->interpSave.rtaint;
 #endif

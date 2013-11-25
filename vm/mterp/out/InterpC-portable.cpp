@@ -28,6 +28,8 @@
 #include <math.h>                   // needed for fmod, fmodf
 #include "mterp/common/FindInterface.h"
 
+#include <string.h>
+
 /*
  * Configuration defines.  These affect the C implementations, i.e. the
  * portable interpreter(s) and C stubs.
@@ -174,18 +176,24 @@ static const char kSpacing[] = "            ";
 # define TMLOGV(...) TMLOG(LOG_VERBOSE, __VA_ARGS__)
 # define TMLOGW(...) TMLOG(LOG_WARN, __VA_ARGS__)
 # define TMLOGE(...) TMLOG(LOG_ERROR, __VA_ARGS__)
-# define TMLOG(_level, ...) do {                                      \
-  char debugStrBuf[128];                                              \
-  snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);            \
-  if (curMethod != NULL)                                              \
-    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                 \
-	 self->threadId, (int)(pc - curMethod->insns), curMethod->clazz->descriptor, curMethod->name, debugStrBuf); \
-  else                                                                \
-    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                        \
-	 self->threadId, debugStrBuf);                                \
+# define TMLOG(_level, ...) do {                                          \
+  char debugStrBuf[128];                                                  \
+  if (app_sz && !strncmp(curMethod->clazz->descriptor, app_name, app_sz)) \
+    {                                                                     \
+  snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);                \
+  if (curMethod != NULL)                                                  \
+    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                     \
+      self->threadId, (int)(pc - curMethod->insns),                       \
+	 curMethod->clazz->descriptor, curMethod->name, debugStrBuf);     \
+  else                                                                    \
+    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                            \
+	 self->threadId, debugStrBuf);                                    \
+    }                                                                     \
   } while(false)
+
 #else
 # define TMLOGX(...) ((void)0)
+# define TMLOGD(...) ((void)0)
 # define TMLOGV(...) ((void)0)
 # define TMLOGW(...) ((void)0)
 # define TMLOGE(...) ((void)0)
@@ -1450,6 +1458,35 @@ void dvmInterpretPortable(Thread* self)
     pc = self->interpSave.pc;
     fp = self->interpSave.curFrame;
     retval = self->interpSave.retval;   /* only need for kInterpEntryReturn? */
+
+#ifdef WITH_TAINT_MEASURE
+    //FIXME: This part is invoked for all all method calls from target application
+    // I want to move this out to somewhere else e.g., Interp.cpp.
+    char* env;
+    env = getenv("AND_INSTRUMENT");
+
+    #define APP_NAME_SZ 256
+    char app_name[APP_NAME_SZ];
+    app_name[0] = 'L';
+    char* tmp = &app_name[1];
+
+    int app_sz = 0;
+
+    if (env) {
+
+      for ( app_sz = 0 ; env[app_sz]!='\0' && app_sz < APP_NAME_SZ; app_sz++) {
+        if (env[app_sz] == '.') {
+          tmp[app_sz] = '/';
+        } else {
+          tmp[app_sz] = env[app_sz];
+        }
+      }
+      tmp[app_sz] = '\0';
+
+      TMLOGV("APP_NAME:%s  %s",env,  app_name);
+    }
+#endif
+
 #ifdef WITH_TAINT_TRACKING
     rtaint = self->interpSave.rtaint;
 #endif
@@ -4287,8 +4324,6 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
         //    methodCallRange, methodToCall, count, regs);
         //printf(" --> %s.%s %s\n", methodToCall->clazz->descriptor,
         //    methodToCall->name, methodToCall->shorty);
-
-        //TMLOGX("|%s", methodToCall->name);
 
         u4* outs;
         int i;
