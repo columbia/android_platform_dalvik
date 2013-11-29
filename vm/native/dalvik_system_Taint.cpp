@@ -46,6 +46,25 @@ static void Dalvik_dalvik_system_Taint_addTaintString(const u4* args,
 }
 
 /*
+ * public static void setTaintString(String str, int tag)
+ */
+
+static void Dalvik_dalvik_system_Taint_setTaintString(const u4* args,
+    JValue* pResult)
+{
+    StringObject *strObj = (StringObject*) args[0];
+    u4 tag = args[1];
+    ArrayObject *value = NULL;
+
+    if (strObj) {
+    value = strObj->array();
+	value->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
+
+/*
  * public static void addTaintObjectArray(Object[] array, int tag)
  */
 static void Dalvik_dalvik_system_Taint_addTaintObjectArray(const u4* args,
@@ -724,6 +743,8 @@ static void Dalvik_dalvik_system_Taint_logPeerFromFd(const u4* args,
 const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
     { "addTaintString",  "(Ljava/lang/String;I)V",
         Dalvik_dalvik_system_Taint_addTaintString},
+    { "setTaintString",  "(Ljava/lang/String;I)V",
+        Dalvik_dalvik_system_Taint_setTaintString},
     { "addTaintObjectArray",  "([Ljava/lang/Object;I)V",
         Dalvik_dalvik_system_Taint_addTaintObjectArray},
     { "addTaintBooleanArray",  "([ZI)V",
