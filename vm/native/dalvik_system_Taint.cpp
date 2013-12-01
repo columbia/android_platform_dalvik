@@ -39,11 +39,30 @@ static void Dalvik_dalvik_system_Taint_addTaintString(const u4* args,
     ArrayObject *value = NULL;
 
     if (strObj) {
-    value = strObj->array();
-	value->taint.tag |= tag;
+      value = strObj->array();
+      value->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+/*
+ * public static void setTaintString(String str, int tag)
+ */
+
+static void Dalvik_dalvik_system_Taint_setTaintString(const u4* args,
+    JValue* pResult)
+{
+    StringObject *strObj = (StringObject*) args[0];
+    u4 tag = args[1];
+    ArrayObject *value = NULL;
+
+    if (strObj) {
+      value = strObj->array();
+      value->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintObjectArray(Object[] array, int tag)
@@ -54,10 +73,25 @@ static void Dalvik_dalvik_system_Taint_addTaintObjectArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+    arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+/*
+ * public static void addTaintObjectArray(Object[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintObjectArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintBooleanArray(boolean[] array, int tag)
@@ -68,10 +102,26 @@ static void Dalvik_dalvik_system_Taint_addTaintBooleanArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+
+/*
+ * public static void setTaintBooleanArray(boolean[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintBooleanArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintCharArray(char[] array, int tag)
@@ -82,10 +132,25 @@ static void Dalvik_dalvik_system_Taint_addTaintCharArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+/*
+ * public static void setTaintCharArray(char[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintCharArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintByteArray(byte[] array, int tag)
@@ -96,10 +161,26 @@ static void Dalvik_dalvik_system_Taint_addTaintByteArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+
+/*
+ * public static void setTaintByteArray(byte[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintByteArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintIntArray(int[] array, int tag)
@@ -110,10 +191,26 @@ static void Dalvik_dalvik_system_Taint_addTaintIntArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+
+/*
+ * public static void setTaintIntArray(int[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintIntArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintShortArray(short[] array, int tag)
@@ -124,10 +221,26 @@ static void Dalvik_dalvik_system_Taint_addTaintShortArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+
+/*
+ * public static void setTaintShortArray(short[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintShortArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintLongArray(long[] array, int tag)
@@ -138,10 +251,26 @@ static void Dalvik_dalvik_system_Taint_addTaintLongArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+
+/*
+ * public static void setTaintLongArray(long[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintLongArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintFloatArray(float[] array, int tag)
@@ -152,10 +281,26 @@ static void Dalvik_dalvik_system_Taint_addTaintFloatArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+
+/*
+ * public static void setTaintFloatArray(float[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintFloatArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static void addTaintDoubleArray(double[] array, int tag)
@@ -166,10 +311,26 @@ static void Dalvik_dalvik_system_Taint_addTaintDoubleArray(const u4* args,
     ArrayObject *arr = (ArrayObject *) args[0];
     u4 tag = args[1];
     if (arr) {
-	arr->taint.tag |= tag;
+      arr->taint.tag |= tag;
     }
     RETURN_VOID();
 }
+
+
+/*
+ * public static void setTaintDoubleArray(double[] array, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintDoubleArray(const u4* args,
+    JValue* pResult)
+{
+    ArrayObject *arr = (ArrayObject *) args[0];
+    u4 tag = args[1];
+    if (arr) {
+      arr->taint.tag = tag;
+    }
+    RETURN_VOID();
+}
+
 
 /*
  * public static boolean addTaintBoolean(boolean val, int tag)
@@ -178,12 +339,26 @@ static void Dalvik_dalvik_system_Taint_addTaintBoolean(const u4* args,
     JValue* pResult)
 {
     u4 val     = args[0];
-    u4 tag     = args[1];	 /* the tag to add */
+    u4 tag     = args[1];     /* the tag to add */
     u4* rtaint = (u4*) &args[2]; /* pointer to return taint tag */
-    u4 vtaint  = args[3];	 /* the existing taint tag on val */
+    u4 vtaint  = args[3];     /* the existing taint tag on val */
     *rtaint = (vtaint | tag);
     RETURN_BOOLEAN(val);
 }
+
+/*
+ * public static boolean setTaintBoolean(boolean val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintBoolean(const u4* args,
+    JValue* pResult)
+{
+    u4 val     = args[0];
+    u4 tag     = args[1];     /* the tag to add */
+    u4* rtaint = (u4*) &args[2]; /* pointer to return taint tag */
+    *rtaint = (tag);
+    RETURN_BOOLEAN(val);
+}
+
 
 /*
  * public static char addTaintChar(char val, int tag)
@@ -194,10 +369,25 @@ static void Dalvik_dalvik_system_Taint_addTaintChar(const u4* args,
     u4 val     = args[0];
     u4 tag     = args[1];         /* the tag to add */
     u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
-    u4 vtaint  = args[3];	  /* the existing taint tag on val */
+    u4 vtaint  = args[3];      /* the existing taint tag on val */
     *rtaint = (vtaint | tag);
     RETURN_CHAR(val);
 }
+
+
+/*
+ * public static char setTaintChar(char val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintChar(const u4* args,
+    JValue* pResult)
+{
+    u4 val     = args[0];
+    u4 tag     = args[1];         /* the tag to add */
+    u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
+    *rtaint = (tag);
+    RETURN_CHAR(val);
+}
+
 
 /*
  * public static char addTaintByte(byte val, int tag)
@@ -208,10 +398,25 @@ static void Dalvik_dalvik_system_Taint_addTaintByte(const u4* args,
     u4 val     = args[0];
     u4 tag     = args[1];         /* the tag to add */
     u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
-    u4 vtaint  = args[3];	  /* the existing taint tag on val */
+    u4 vtaint  = args[3];      /* the existing taint tag on val */
     *rtaint = (vtaint | tag);
     RETURN_BYTE(val);
 }
+
+
+/*
+ * public static char setTaintByte(byte val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintByte(const u4* args,
+    JValue* pResult)
+{
+    u4 val     = args[0];
+    u4 tag     = args[1];         /* the tag to add */
+    u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
+    *rtaint = (tag);
+    RETURN_BYTE(val);
+}
+
 
 /*
  * public static int addTaintInt(int val, int tag)
@@ -220,12 +425,27 @@ static void Dalvik_dalvik_system_Taint_addTaintInt(const u4* args,
     JValue* pResult)
 {
     u4 val     = args[0];
-    u4 tag     = args[1];	  /* the tag to add */
+    u4 tag     = args[1];      /* the tag to add */
     u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
-    u4 vtaint  = args[3];	  /* the existing taint tag on val */
+    u4 vtaint  = args[3];      /* the existing taint tag on val */
     *rtaint = (vtaint | tag);
     RETURN_INT(val);
 }
+
+
+/*
+ * public static int setTaintInt(int val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintInt(const u4* args,
+    JValue* pResult)
+{
+    u4 val     = args[0];
+    u4 tag     = args[1];      /* the tag to add */
+    u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
+    *rtaint = (tag);
+    RETURN_INT(val);
+}
+
 
 /*
  * public static int addTaintShort(short val, int tag)
@@ -234,12 +454,27 @@ static void Dalvik_dalvik_system_Taint_addTaintShort(const u4* args,
     JValue* pResult)
 {
     u4 val     = args[0];
-    u4 tag     = args[1];	  /* the tag to add */
+    u4 tag     = args[1];      /* the tag to add */
     u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
-    u4 vtaint  = args[3];	  /* the existing taint tag on val */
+    u4 vtaint  = args[3];      /* the existing taint tag on val */
     *rtaint = (vtaint | tag);
     RETURN_SHORT(val);
 }
+
+
+/*
+ * public static int setTaintShort(short val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintShort(const u4* args,
+    JValue* pResult)
+{
+    u4 val     = args[0];
+    u4 tag     = args[1];      /* the tag to add */
+    u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
+    *rtaint = (tag);
+    RETURN_SHORT(val);
+}
+
 
 /*
  * public static long addTaintLong(long val, int tag)
@@ -248,13 +483,29 @@ static void Dalvik_dalvik_system_Taint_addTaintLong(const u4* args,
     JValue* pResult)
 {
     u8 val;
-    u4 tag     = args[2];	     /* the tag to add */
+    u4 tag     = args[2];         /* the tag to add */
     u4* rtaint = (u4*) &args[3];     /* pointer to return taint tag */
-    u4 vtaint  = args[4];	     /* the existing taint tag on val */
-    memcpy(&val, &args[0], 8);	     /* EABI prevents direct store */
+    u4 vtaint  = args[4];         /* the existing taint tag on val */
+    memcpy(&val, &args[0], 8);         /* EABI prevents direct store */
     *rtaint = (vtaint | tag);
     RETURN_LONG(val);
 }
+
+
+/*
+ * public static long setTaintLong(long val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintLong(const u4* args,
+    JValue* pResult)
+{
+    u8 val;
+    u4 tag     = args[2];         /* the tag to add */
+    u4* rtaint = (u4*) &args[3];     /* pointer to return taint tag */
+    memcpy(&val, &args[0], 8);         /* EABI prevents direct store */
+    *rtaint = ( tag);
+    RETURN_LONG(val);
+}
+
 
 /*
  * public static float addTaintFloat(float val, int tag)
@@ -263,12 +514,27 @@ static void Dalvik_dalvik_system_Taint_addTaintFloat(const u4* args,
     JValue* pResult)
 {
     u4 val     = args[0];
-    u4 tag     = args[1];	  /* the tag to add */
+    u4 tag     = args[1];      /* the tag to add */
     u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
-    u4 vtaint  = args[3];	  /* the existing taint tag on val */
+    u4 vtaint  = args[3];      /* the existing taint tag on val */
     *rtaint = (vtaint | tag);
-    RETURN_INT(val);		  /* Be opaque; RETURN_FLOAT doesn't work */
+    RETURN_INT(val);          /* Be opaque; RETURN_FLOAT doesn't work */
 }
+
+
+/*
+ * public static float setTaintFloat(float val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintFloat(const u4* args,
+    JValue* pResult)
+{
+    u4 val     = args[0];
+    u4 tag     = args[1];      /* the tag to add */
+    u4* rtaint = (u4*) &args[2];  /* pointer to return taint tag */
+    *rtaint = (tag);
+    RETURN_INT(val);          /* Be opaque; RETURN_FLOAT doesn't work */
+}
+
 
 /*
  * public static double addTaintDouble(double val, int tag)
@@ -277,13 +543,29 @@ static void Dalvik_dalvik_system_Taint_addTaintDouble(const u4* args,
     JValue* pResult)
 {
     u8 val;
-    u4 tag     = args[2];	     /* the tag to add */
+    u4 tag     = args[2];         /* the tag to add */
     u4* rtaint = (u4*) &args[3];     /* pointer to return taint tag */
-    u4 vtaint  = args[4];	     /* the existing taint tag on val */
-    memcpy(&val, &args[0], 8);	     /* EABI prevents direct store */
+    u4 vtaint  = args[4];         /* the existing taint tag on val */
+    memcpy(&val, &args[0], 8);         /* EABI prevents direct store */
     *rtaint = (vtaint | tag);
-    RETURN_LONG(val);		     /* Be opaque; RETURN_DOUBLE doesn't work */
+    RETURN_LONG(val);             /* Be opaque; RETURN_DOUBLE doesn't work */
 }
+
+
+/*
+ * public static double setTaintDouble(double val, int tag)
+ */
+static void Dalvik_dalvik_system_Taint_setTaintDouble(const u4* args,
+    JValue* pResult)
+{
+    u8 val;
+    u4 tag     = args[2];         /* the tag to add */
+    u4* rtaint = (u4*) &args[3];     /* pointer to return taint tag */
+    memcpy(&val, &args[0], 8);         /* EABI prevents direct store */
+    *rtaint = (tag);
+    RETURN_LONG(val);             /* Be opaque; RETURN_DOUBLE doesn't work */
+}
+
 
 /*
  * public static int getTaintString(String str)
@@ -296,9 +578,9 @@ static void Dalvik_dalvik_system_Taint_getTaintString(const u4* args,
 
     if (strObj) {
     value = strObj->array();
-	RETURN_INT(value->taint.tag);
+    RETURN_INT(value->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -310,9 +592,9 @@ static void Dalvik_dalvik_system_Taint_getTaintObjectArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -324,9 +606,9 @@ static void Dalvik_dalvik_system_Taint_getTaintBooleanArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -338,9 +620,9 @@ static void Dalvik_dalvik_system_Taint_getTaintCharArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -352,9 +634,9 @@ static void Dalvik_dalvik_system_Taint_getTaintByteArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -366,9 +648,9 @@ static void Dalvik_dalvik_system_Taint_getTaintIntArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -380,9 +662,9 @@ static void Dalvik_dalvik_system_Taint_getTaintShortArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -394,9 +676,9 @@ static void Dalvik_dalvik_system_Taint_getTaintLongArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -408,9 +690,9 @@ static void Dalvik_dalvik_system_Taint_getTaintFloatArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else {
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -422,9 +704,9 @@ static void Dalvik_dalvik_system_Taint_getTaintDoubleArray(const u4* args,
 {
     ArrayObject *arr = (ArrayObject *) args[0];
     if (arr) {
-	RETURN_INT(arr->taint.tag);
+    RETURN_INT(arr->taint.tag);
     } else{
-	RETURN_INT(TAINT_CLEAR);
+    RETURN_INT(TAINT_CLEAR);
     }
 }
 
@@ -544,19 +826,19 @@ static u4 getTaintXattr(int fd)
 
     ret = fgetxattr(fd, TAINT_XATTR_NAME, &buf, sizeof(buf));
     if (ret > 0) {
-	tag = buf;
+    tag = buf;
     } else {
-	if (errno == ENOATTR) {
-	    /* do nothing */
-	} else if (errno == ERANGE) {
-	    ALOGW("TaintLog: fgetxattr(%d) contents to large", fd);
-	} else if (errno == ENOTSUP) {
-	    /* XATTRs are not supported. No need to spam the logs */
-	} else if (errno == EPERM) {
-	    /* Strange interaction with /dev/log/main. Suppress the log */
-	} else {
-	    ALOGW("TaintLog: fgetxattr(%d): unknown error code %d", fd, errno);
-	}
+    if (errno == ENOATTR) {
+        /* do nothing */
+    } else if (errno == ERANGE) {
+        ALOGW("TaintLog: fgetxattr(%d) contents to large", fd);
+    } else if (errno == ENOTSUP) {
+        /* XATTRs are not supported. No need to spam the logs */
+    } else if (errno == EPERM) {
+        /* Strange interaction with /dev/log/main. Suppress the log */
+    } else {
+        ALOGW("TaintLog: fgetxattr(%d): unknown error code %d", fd, errno);
+    }
     }
 
     return tag;
@@ -569,15 +851,15 @@ static void setTaintXattr(int fd, u4 tag)
     ret = fsetxattr(fd, TAINT_XATTR_NAME, &tag, sizeof(tag), 0);
 
     if (ret < 0) {
-	if (errno == ENOSPC || errno == EDQUOT) {
-	    ALOGW("TaintLog: fsetxattr(%d): not enough room to set xattr", fd);
-	} else if (errno == ENOTSUP) {
-	    /* XATTRs are not supported. No need to spam the logs */
-	} else if (errno == EPERM) {
-	    /* Strange interaction with /dev/log/main. Suppress the log */
-	} else {
-	    ALOGW("TaintLog: fsetxattr(%d): unknown error code %d", fd, errno);
-	}
+    if (errno == ENOSPC || errno == EDQUOT) {
+        ALOGW("TaintLog: fsetxattr(%d): not enough room to set xattr", fd);
+    } else if (errno == ENOTSUP) {
+        /* XATTRs are not supported. No need to spam the logs */
+    } else if (errno == EPERM) {
+        /* Strange interaction with /dev/log/main. Suppress the log */
+    } else {
+        ALOGW("TaintLog: fsetxattr(%d): unknown error code %d", fd, errno);
+    }
     }
 
 }
@@ -596,7 +878,7 @@ static void Dalvik_dalvik_system_Taint_getTaintFile(const u4* args,
     tag = getTaintXattr(fd);
 
     if (tag) {
-	ALOGI("TaintLog: getTaintFile(%d) = 0x%08x", fd, tag);
+    ALOGI("TaintLog: getTaintFile(%d) = 0x%08x", fd, tag);
     }
 
     RETURN_INT(tag);
@@ -618,8 +900,8 @@ static void Dalvik_dalvik_system_Taint_addTaintFile(const u4* args,
     otag = getTaintXattr(fd);
 
     if (tag) {
-	ALOGI("TaintLog: addTaintFile(%d): adding 0x%08x to 0x%08x = 0x%08x",
-		fd, tag, otag, tag | otag);
+    ALOGI("TaintLog: addTaintFile(%d): adding 0x%08x to 0x%08x = 0x%08x",
+        fd, tag, otag, tag | otag);
     }
 
     setTaintXattr(fd, tag | otag);
@@ -638,19 +920,19 @@ static void Dalvik_dalvik_system_Taint_log(const u4* args,
     char *msg;
 
     if (msgObj == NULL) {
-	dvmThrowNullPointerException("msgObj == NULL");
-	RETURN_VOID();
+    dvmThrowNullPointerException("msgObj == NULL");
+    RETURN_VOID();
     }
 
-	msg = dvmCreateCstrFromString(msgObj);
-	ALOG(LOG_WARN, "TaintLog", "%s", msg);
-	char *curmsg = msg;
-	while(strlen(curmsg) > 1013)
-	{
-		curmsg = curmsg+1013;
-		ALOG(LOG_WARN, "TaintLog", "%s", curmsg);
-	}
-	free(msg);
+    msg = dvmCreateCstrFromString(msgObj);
+    ALOG(LOG_WARN, "TaintLog", "%s", msg);
+    char *curmsg = msg;
+    while(strlen(curmsg) > 1013)
+    {
+        curmsg = curmsg+1013;
+        ALOG(LOG_WARN, "TaintLog", "%s", curmsg);
+    }
+    free(msg);
 
     RETURN_VOID();
 }
@@ -700,9 +982,9 @@ static void Dalvik_dalvik_system_Taint_logPathFromFd(const u4* args,
     snprintf(ppath, 20, "/proc/%d/fd/%d", pid, fd);
     err = readlink(ppath, rpath, 80);
     if (err >= 0) {
-	ALOGW("TaintLog: fd %d -> %s", fd, rpath);
+    ALOGW("TaintLog: fd %d -> %s", fd, rpath);
     } else {
-	ALOGW("TaintLog: error finding path for fd %d", fd);
+    ALOGW("TaintLog: error finding path for fd %d", fd);
     }
 
     RETURN_VOID();
@@ -724,40 +1006,76 @@ static void Dalvik_dalvik_system_Taint_logPeerFromFd(const u4* args,
 const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
     { "addTaintString",  "(Ljava/lang/String;I)V",
         Dalvik_dalvik_system_Taint_addTaintString},
+    { "setTaintString",  "(Ljava/lang/String;I)V",
+        Dalvik_dalvik_system_Taint_setTaintString},
     { "addTaintObjectArray",  "([Ljava/lang/Object;I)V",
         Dalvik_dalvik_system_Taint_addTaintObjectArray},
+    { "setTaintObjectArray",  "([Ljava/lang/Object;I)V",
+        Dalvik_dalvik_system_Taint_setTaintObjectArray},
     { "addTaintBooleanArray",  "([ZI)V",
         Dalvik_dalvik_system_Taint_addTaintBooleanArray},
+    { "setTaintBooleanArray",  "([ZI)V",
+        Dalvik_dalvik_system_Taint_setTaintBooleanArray},
     { "addTaintCharArray",  "([CI)V",
         Dalvik_dalvik_system_Taint_addTaintCharArray},
+    { "setTaintCharArray",  "([CI)V",
+        Dalvik_dalvik_system_Taint_setTaintCharArray},
     { "addTaintByteArray",  "([BI)V",
         Dalvik_dalvik_system_Taint_addTaintByteArray},
+    { "setTaintByteArray",  "([BI)V",
+        Dalvik_dalvik_system_Taint_setTaintByteArray},
     { "addTaintIntArray",  "([II)V",
         Dalvik_dalvik_system_Taint_addTaintIntArray},
+    { "setTaintIntArray",  "([II)V",
+        Dalvik_dalvik_system_Taint_setTaintIntArray},
     { "addTaintShortArray",  "([SI)V",
         Dalvik_dalvik_system_Taint_addTaintShortArray},
+    { "setTaintShortArray",  "([SI)V",
+        Dalvik_dalvik_system_Taint_setTaintShortArray},
     { "addTaintLongArray",  "([JI)V",
         Dalvik_dalvik_system_Taint_addTaintLongArray},
+    { "setTaintLongArray",  "([JI)V",
+        Dalvik_dalvik_system_Taint_setTaintLongArray},
     { "addTaintFloatArray",  "([FI)V",
         Dalvik_dalvik_system_Taint_addTaintFloatArray},
+    { "setTaintFloatArray",  "([FI)V",
+        Dalvik_dalvik_system_Taint_setTaintFloatArray},
     { "addTaintDoubleArray",  "([DI)V",
         Dalvik_dalvik_system_Taint_addTaintDoubleArray},
+    { "setTaintDoubleArray",  "([DI)V",
+        Dalvik_dalvik_system_Taint_setTaintDoubleArray},
     { "addTaintBoolean",  "(ZI)Z",
         Dalvik_dalvik_system_Taint_addTaintBoolean},
+    { "setTaintBoolean",  "(ZI)Z",
+        Dalvik_dalvik_system_Taint_setTaintBoolean},
     { "addTaintChar",  "(CI)C",
         Dalvik_dalvik_system_Taint_addTaintChar},
+    { "setTaintChar",  "(CI)C",
+        Dalvik_dalvik_system_Taint_setTaintChar},
     { "addTaintByte",  "(BI)B",
         Dalvik_dalvik_system_Taint_addTaintByte},
+    { "setTaintByte",  "(BI)B",
+        Dalvik_dalvik_system_Taint_setTaintByte},
     { "addTaintInt",  "(II)I",
         Dalvik_dalvik_system_Taint_addTaintInt},
+    { "setTaintInt",  "(II)I",
+        Dalvik_dalvik_system_Taint_setTaintInt},
     { "addTaintShort",  "(SI)S",
         Dalvik_dalvik_system_Taint_addTaintShort},
+    { "setTaintShort",  "(SI)S",
+        Dalvik_dalvik_system_Taint_setTaintShort},
     { "addTaintLong",  "(JI)J",
         Dalvik_dalvik_system_Taint_addTaintLong},
+    { "setTaintLong",  "(JI)J",
+        Dalvik_dalvik_system_Taint_setTaintLong},
     { "addTaintFloat",  "(FI)F",
         Dalvik_dalvik_system_Taint_addTaintFloat},
+    { "setTaintFloat",  "(FI)F",
+        Dalvik_dalvik_system_Taint_setTaintFloat},
     { "addTaintDouble",  "(DI)D",
         Dalvik_dalvik_system_Taint_addTaintDouble},
+    { "setTaintDouble",  "(DI)D",
+        Dalvik_dalvik_system_Taint_setTaintDouble},
     { "getTaintString",  "(Ljava/lang/String;)I",
         Dalvik_dalvik_system_Taint_getTaintString},
     { "getTaintObjectArray",  "([Ljava/lang/Object;)I",
