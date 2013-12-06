@@ -29,6 +29,9 @@
 #include "mterp/common/FindInterface.h"
 
 #include <string.h>
+#include <stdint.h>
+
+extern uint64_t tm_counter;
 
 /*
  * Configuration defines.  These affect the C implementations, i.e. the
@@ -182,12 +185,12 @@ static const char kSpacing[] = "            ";
     {                                                                     \
   snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);                \
   if (curMethod != NULL)                                                  \
-    ALOG(_level, LOG_TAG"tm", "%-2d|%04x|%s.%s:%s\n",                     \
-      self->threadId, (int)(pc - curMethod->insns),                       \
+    ALOG(_level, LOG_TAG"tm", "%lld|%-2d|%04x|%s.%s:%s\n",                 \
+         tm_counter++, self->threadId, (int)(pc - curMethod->insns),      \
 	 curMethod->clazz->descriptor, curMethod->name, debugStrBuf);         \
   else                                                                    \
-    ALOG(_level, LOG_TAG"tm", "%-2d|####%s\n",                            \
-	 self->threadId, debugStrBuf);                                        \
+    ALOG(_level, LOG_TAG"tm", "%lld|%-2d|####%s\n",                        \
+         tm_counter++, self->threadId, debugStrBuf);                      \
     }                                                                     \
   } while(false)
 

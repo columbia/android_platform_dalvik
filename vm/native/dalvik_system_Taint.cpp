@@ -25,6 +25,10 @@
 #include "attr/xattr.h"
 
 #include <errno.h>
+#include <stdint.h>
+
+uint64_t tm_counter = 0;
+
 
 #define TAINT_XATTR_NAME "user.taint"
 
