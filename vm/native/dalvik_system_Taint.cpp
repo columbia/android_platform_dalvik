@@ -1007,6 +1007,13 @@ static void Dalvik_dalvik_system_Taint_logPeerFromFd(const u4* args,
     RETURN_VOID();
 }
 
+/*
+ *
+ */
+static int Dalvik_dalvik_system_Taint_incTmCounter(const u4*,  JValue* pResult) {
+  RETURN_INT(tm_counter++);
+}
+
 const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
     { "addTaintString",  "(Ljava/lang/String;I)V",
         Dalvik_dalvik_system_Taint_addTaintString},
@@ -1130,5 +1137,7 @@ const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
         Dalvik_dalvik_system_Taint_logPathFromFd},
     { "logPeerFromFd",  "(I)V",
         Dalvik_dalvik_system_Taint_logPeerFromFd},
+    { "incTmCounter",  "(V)I",
+        Dalvik_dalvik_system_Taint_incTmCounter},
     { NULL, NULL, NULL },
 };
