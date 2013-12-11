@@ -1010,7 +1010,7 @@ static void Dalvik_dalvik_system_Taint_logPeerFromFd(const u4* args,
 /*
  *
  */
-static int Dalvik_dalvik_system_Taint_incTmCounter(const u4*,  JValue* pResult) {
+static void Dalvik_dalvik_system_Taint_incTmCounter(const u4*,  JValue* pResult) {
   RETURN_INT(tm_counter++);
 }
 

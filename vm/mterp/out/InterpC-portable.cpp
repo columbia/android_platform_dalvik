@@ -185,7 +185,7 @@ static const char kSpacing[] = "            ";
     {                                                                     \
   snprintf(debugStrBuf, sizeof(debugStrBuf), __VA_ARGS__);                \
   if (curMethod != NULL)                                                  \
-    ALOG(_level, LOG_TAG"tm", "%lld|%-2d|%04x|%s.%s:%s\n",                 \
+    ALOG(_level, LOG_TAG"tm", "%lld|%-2d|%04x|%s.%s|%s\n",              \
          tm_counter++, self->threadId, (int)(pc - curMethod->insns),      \
 	 curMethod->clazz->descriptor, curMethod->name, debugStrBuf);         \
   else                                                                    \
