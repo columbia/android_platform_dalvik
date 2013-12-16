@@ -25,6 +25,11 @@
 #include "attr/xattr.h"
 
 #include <errno.h>
+#include <stdint.h>
+
+extern char *__progname;
+uint64_t tm_counter = 0;
+
 
 #define TAINT_XATTR_NAME "user.taint"
 
@@ -1003,6 +1008,22 @@ static void Dalvik_dalvik_system_Taint_logPeerFromFd(const u4* args,
     RETURN_VOID();
 }
 
+/*
+ *
+ */
+static void Dalvik_dalvik_system_Taint_incTmCounter(const u4*,  JValue* pResult) {
+  RETURN_INT(tm_counter++);
+}
+
+/*
+ *
+ */
+static void Dalvik_dalvik_system_Taint_getProgName(const u4*,  JValue* pResult) {
+  StringObject* progname = dvmCreateStringFromCstr(__progname);
+  RETURN_PTR(progname);
+}
+
+
 const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
     { "addTaintString",  "(Ljava/lang/String;I)V",
         Dalvik_dalvik_system_Taint_addTaintString},
@@ -1126,5 +1147,9 @@ const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
         Dalvik_dalvik_system_Taint_logPathFromFd},
     { "logPeerFromFd",  "(I)V",
         Dalvik_dalvik_system_Taint_logPeerFromFd},
+    { "incTmCounter",  "()I",
+        Dalvik_dalvik_system_Taint_incTmCounter},
+    { "getProgName", "()Ljava/lang/String;",
+        Dalvik_dalvik_system_Taint_getProgName},
     { NULL, NULL, NULL },
 };

@@ -58,8 +58,6 @@ void dvmInterpretPortable(Thread* self)
         }
       }
       tmp[app_sz] = '\0';
-
-      TMLOGV("APP_NAME:%s  %s",env,  app_name);
     }
 #endif
 
