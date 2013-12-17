@@ -28,6 +28,10 @@
 #include <stdint.h>
 
 extern char *__progname;
+
+/* tm_counter is used to assign unique identifier to events(branch choices,
+ * output activities ...) gathered from different component(Posix.java,
+ * dalvikvmvm, frameworks ..) so that we can resolve the ordering issues. */
 uint64_t tm_counter = 0;
 
 
