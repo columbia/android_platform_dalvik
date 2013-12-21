@@ -1981,26 +1981,36 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
     Interpreter stdInterp;
     if (gDvm.executionMode == kExecutionModeInterpFast) {
 
-        //jikk -- patch to force portable-interp for instrumentation  
-        if (strcmp(__progname, env) == 0) {
-          //ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)", 
-          //      __progname, method->clazz->descriptor, method->name, self->threadId);
-          
-          stdInterp = dvmInterpretPortable;
-        } else {
-          stdInterp = dvmMterpStd;
-        }
+      //jikk -- patch to force portable-interp for instrumentation  
+      if (!__progname) 
+        ALOGE("__porgname is not set");
+      
+      if (!env) 
+        ALOGE("environmental variable AND_INSTRUMENT is not set");
+
+      if (__progname && env && strcmp(__progname, env) == 0) {
+        //ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)", 
+        //      __progname, method->clazz->descriptor, method->name, self->threadId);
+        stdInterp = dvmInterpretPortable;
+      } else {
+        stdInterp = dvmMterpStd;
+      }
 
 #if defined(WITH_JIT)
     } else if (gDvm.executionMode == kExecutionModeJit) {
         //jikk -- patch to enforce portable-interp for instrumentation  
-        if (strcmp(__progname, env) == 0) {
-          //ALOGE("JIKK: setting interp:JIT --> interp:Portable for %s: %s, %s (tid: %d)", 
-          //      __progname, method->clazz->descriptor, method->name, self->threadId);
-          stdInterp = dvmInterpretPortable;
-        } else {
-          stdInterp = dvmMterpStd;
-        }
+      if (!__progname) 
+        ALOGE("__porgname is not set");
+      
+      if (!env) 
+        ALOGE("environmental variable AND_INSTRUMENT is not set");
+      if (__progname && env && strcmp(__progname, env) == 0) {
+        //ALOGE("JIKK: setting interp:JIT --> interp:Portable for %s: %s, %s (tid: %d)", 
+        //      __progname, method->clazz->descriptor, method->name, self->threadId);
+        stdInterp = dvmInterpretPortable;
+      } else {
+        stdInterp = dvmMterpStd;
+      }
 #endif
     } else {
         stdInterp = dvmInterpretPortable;
