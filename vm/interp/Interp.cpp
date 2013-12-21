@@ -1980,11 +1980,9 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
     typedef void (*Interpreter)(Thread*);
     Interpreter stdInterp;
     if (gDvm.executionMode == kExecutionModeInterpFast) {
-
       //jikk -- patch to force portable-interp for instrumentation  
       if (!__progname) 
         ALOGE("__porgname is not set");
-      
       if (!env) 
         ALOGE("environmental variable AND_INSTRUMENT is not set");
 
@@ -2001,7 +1999,6 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
         //jikk -- patch to enforce portable-interp for instrumentation  
       if (!__progname) 
         ALOGE("__porgname is not set");
-      
       if (!env) 
         ALOGE("environmental variable AND_INSTRUMENT is not set");
       if (__progname && env && strcmp(__progname, env) == 0) {
