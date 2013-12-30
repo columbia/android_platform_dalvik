@@ -1980,14 +1980,14 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
     typedef void (*Interpreter)(Thread*);
     Interpreter stdInterp;
     if (gDvm.executionMode == kExecutionModeInterpFast) {
-      //jikk -- patch to force portable-interp for instrumentation
-      if (!__progname)
+      //jikk -- patch to force portable-interp for instrumentation  
+      if (!__progname) 
         ALOGE("__porgname is not set");
-      if (!env)
+      if (!env) 
         ALOGE("environmental variable AND_INSTRUMENT is not set");
 
       if (__progname && env && strcmp(__progname, env) == 0) {
-        //ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)",
+        //ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)", 
         //      __progname, method->clazz->descriptor, method->name, self->threadId);
         stdInterp = dvmInterpretPortable;
       } else {
@@ -1996,13 +1996,13 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
 
 #if defined(WITH_JIT)
     } else if (gDvm.executionMode == kExecutionModeJit) {
-        //jikk -- patch to enforce portable-interp for instrumentation
-      if (!__progname)
+        //jikk -- patch to enforce portable-interp for instrumentation  
+      if (!__progname) 
         ALOGE("__porgname is not set");
-      if (!env)
+      if (!env) 
         ALOGE("environmental variable AND_INSTRUMENT is not set");
       if (__progname && env && strcmp(__progname, env) == 0) {
-        //ALOGE("JIKK: setting interp:JIT --> interp:Portable for %s: %s, %s (tid: %d)",
+        //ALOGE("JIKK: setting interp:JIT --> interp:Portable for %s: %s, %s (tid: %d)", 
         //      __progname, method->clazz->descriptor, method->name, self->threadId);
         stdInterp = dvmInterpretPortable;
       } else {
