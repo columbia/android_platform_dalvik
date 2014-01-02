@@ -33,7 +33,7 @@ extern char *__progname;
  * output activities ...) gathered from different component(Posix.java,
  * dalvikvmvm, frameworks ..) so that we can resolve the ordering issues. */
 uint64_t tm_counter = 0;
-
+bool isTMeasureAPPFlag = false;
 
 #define TAINT_XATTR_NAME "user.taint"
 
@@ -1027,6 +1027,13 @@ static void Dalvik_dalvik_system_Taint_getProgName(const u4*,  JValue* pResult) 
   RETURN_PTR(progname);
 }
 
+/*
+ *
+ */
+static void Dalvik_dalvik_system_Taint_isTMeasureAPP(const u4*,  JValue* pResult) {
+  u4 val = (u4) isTMeasureAPPFlag;
+  RETURN_BOOLEAN(val);
+}
 
 const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
     { "addTaintString",  "(Ljava/lang/String;I)V",
@@ -1155,5 +1162,7 @@ const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
         Dalvik_dalvik_system_Taint_incTmCounter},
     { "getProgName", "()Ljava/lang/String;",
         Dalvik_dalvik_system_Taint_getProgName},
+    {"isTMeasureAPP", "()Z",
+     Dalvik_dalvik_system_Taint_isTMeasureAPP},
     { NULL, NULL, NULL },
 };
