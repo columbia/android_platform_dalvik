@@ -1904,6 +1904,7 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
     ExecutionSubModes savedSubModes;
 
     extern char * __progname;
+    extern bool isTMeasureAPPFlag;
     char* env;
     env = getenv("AND_INSTRUMENT");
 
@@ -1989,6 +1990,7 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
       if (__progname && env && strcmp(__progname, env) == 0) {
         //ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)", 
         //      __progname, method->clazz->descriptor, method->name, self->threadId);
+        isTMeasureAPPFlag = true;
         stdInterp = dvmInterpretPortable;
       } else {
         stdInterp = dvmMterpStd;
@@ -2004,6 +2006,7 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
       if (__progname && env && strcmp(__progname, env) == 0) {
         //ALOGE("JIKK: setting interp:JIT --> interp:Portable for %s: %s, %s (tid: %d)", 
         //      __progname, method->clazz->descriptor, method->name, self->threadId);
+        isTMeasureAPPFlag = true;
         stdInterp = dvmInterpretPortable;
       } else {
         stdInterp = dvmMterpStd;
