@@ -1030,6 +1030,14 @@ static void Dalvik_dalvik_system_Taint_getProgName(const u4*,  JValue* pResult) 
 /*
  *
  */
+static void Dalvik_dalvik_system_Taint_getThreadId(const u4*,  JValue* pResult) {
+  //RETURN_INT(self->threadId);
+  RETURN_INT(dvmThreadSelf()->threadId);
+}
+
+/*
+ *
+ */
 static void Dalvik_dalvik_system_Taint_isTMeasureAPP(const u4*,  JValue* pResult) {
   u4 val = (u4) isTMeasureAPPFlag;
   RETURN_BOOLEAN(val);
@@ -1164,5 +1172,7 @@ const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
         Dalvik_dalvik_system_Taint_getProgName},
     {"isTMeasureAPP", "()Z",
      Dalvik_dalvik_system_Taint_isTMeasureAPP},
+    {"getNativeThreadId", "()I",
+     Dalvik_dalvik_system_Taint_getThreadId},
     { NULL, NULL, NULL },
 };
