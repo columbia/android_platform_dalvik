@@ -2004,6 +2004,14 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
      } else {
 	if (fgets(line, 256, f) != NULL) {
 		fclose(f);
+		//convert '\n' to '\0'
+		for (i = 0; i < 256; i++) {
+			if (line[i] == '\n') {
+				line[i] = '\0';
+				break;
+			} else if (line[i] == '\0')
+				break;
+		}
 		if (__progname && line[0]!='\0' && strcmp(__progname, line) == 0) {
 	      		isTMeasureAPPFlag = true;
 			stdInterp = dvmInterpretPortable;
@@ -2036,6 +2044,14 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
      } else {
 	if (fgets(line, 256, f) != NULL) {
 		fclose(f);
+		//convert '\n' to '\0'
+		for (i = 0; i < 256; i++) {
+			if (line[i] == '\n') {
+				line[i] = '\0';
+				break;
+			} else if (line[i] == '\0')
+				break;
+		}
 		if (__progname && line[0]!='\0' && strcmp(__progname, line) == 0) {
 	      		isTMeasureAPPFlag = true;
 			stdInterp = dvmInterpretPortable;
