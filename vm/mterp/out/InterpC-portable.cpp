@@ -1494,8 +1494,7 @@ void dvmInterpretPortable(Thread* self)
    } else {
 	/* read the app from file */
 	if (fgets(line, APP_NAME_SZ, f) != NULL) {
-		for ( app_sz = 0 ; line[app_sz]!='\0' && line[app_sz] != '\n'
-						&& app_sz < APP_NAME_SZ; app_sz++) {
+		for ( app_sz = 0 ; line[app_sz]!='\0' && app_sz < APP_NAME_SZ; app_sz++) {
 		    if (line[app_sz] == '.') {
 			    tmp[app_sz] = '/';
 		    } else {
