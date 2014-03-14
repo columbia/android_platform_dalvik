@@ -47,7 +47,38 @@ void dvmInterpretPortable(Thread* self)
     char* tmp = &app_name[1];
 
     int app_sz = 0;
+    unsigned i;
+    char line[APP_NAME_SZ];
+    
+    FILE *f = fopen("/data/local/tmp/instrumented", "r");
+    if (f == NULL) {
+	//fall to the normal
+	if (env) {
+	    for ( app_sz = 0 ; env[app_sz]!='\0' && app_sz < APP_NAME_SZ; app_sz++) {
+		    if (env[app_sz] == '.') {
+			    tmp[app_sz] = '/';
+		    } else {
+			    tmp[app_sz] = env[app_sz];
+		    }
+	    }
+	    tmp[app_sz] = '\0';
+       }
+   } else {
+	/* read the app from file */
+	if (fgets(line, APP_NAME_SZ, f) != NULL) {
+		for ( app_sz = 0 ; line[app_sz]!='\0' && line[app_sz] != '\n'
+						&& app_sz < APP_NAME_SZ; app_sz++) {
+		    if (line[app_sz] == '.') {
+			    tmp[app_sz] = '/';
+		    } else {
+			    tmp[app_sz] = line[app_sz];
+		    }
+	    	}
+        }
+	fclose(f);
+   }
 
+#if 0
     if (env) {
 
       for ( app_sz = 0 ; env[app_sz]!='\0' && app_sz < APP_NAME_SZ; app_sz++) {
@@ -59,6 +90,7 @@ void dvmInterpretPortable(Thread* self)
       }
       tmp[app_sz] = '\0';
     }
+#endif
 #endif
 
 #ifdef WITH_TAINT_TRACKING
