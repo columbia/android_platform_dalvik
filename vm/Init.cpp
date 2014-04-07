@@ -35,6 +35,8 @@
 #define kMinHeapSize        (2*1024*1024)
 #define kMaxHeapSize        (1*1024*1024*1024)
 
+extern FILE *aiFile;
+
 /*
  * Register VM-agnostic native methods for system classes.
  */
