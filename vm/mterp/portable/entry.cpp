@@ -77,20 +77,6 @@ void dvmInterpretPortable(Thread* self)
         }
 	fclose(f);
    }
-
-#if 0
-    if (env) {
-
-      for ( app_sz = 0 ; env[app_sz]!='\0' && app_sz < APP_NAME_SZ; app_sz++) {
-        if (env[app_sz] == '.') {
-          tmp[app_sz] = '/';
-        } else {
-          tmp[app_sz] = env[app_sz];
-        }
-      }
-      tmp[app_sz] = '\0';
-    }
-#endif
 #endif
 
 #ifdef WITH_TAINT_TRACKING
