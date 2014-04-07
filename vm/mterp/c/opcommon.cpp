@@ -101,6 +101,7 @@ GOTO_TARGET_DECL(exceptionThrown);
         else                                                                \
             result = (_nanVal);                                             \
         ILOGV("+ result=%d", result);                                       \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (- v%d v%d)) [cmp%s]", vdst, vsrc1, vsrc2, (_opname)) \
         SET_REGISTER(vdst, result);                                         \
 /* ifdef WITH_TAINT_TRACKING */                                             \
         SET_REGISTER_TAINT(vdst, TAINT_CLEAR);				    \
@@ -114,6 +115,8 @@ GOTO_TARGET_DECL(exceptionThrown);
         vsrc2 = INST_B(inst);                                               \
         if ((s4) GET_REGISTER(vsrc1) _cmp (s4) GET_REGISTER(vsrc2)) {       \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
+        AI_LOGE_W_METHOD("[AI] [brancht] (%s v%d v%d) [%s]", AI_STR(_cmp), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d ", GET_REGISTER(vsrc1), GET_REGISTER(vsrc2)) \
 	    TMLOGE("| if-%s| > ", _opname);                                 \
             ILOGV("|if-%s v%d,v%d,+0x%04x", (_opname), vsrc1, vsrc2,        \
                 branchOffset);                                              \
@@ -122,6 +125,8 @@ GOTO_TARGET_DECL(exceptionThrown);
                 PERIODIC_CHECKS(branchOffset);                              \
             FINISH(branchOffset);                                           \
         } else {                                                            \
+            AI_LOGE_W_METHOD("[AI] [branchf] (not (%s v%d v%d)) [%s]", AI_STR(_cmp), vsrc1, vsrc2, (_opname)) \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d ", GET_REGISTER(vsrc1), GET_REGISTER(vsrc2)) \
             TMLOGE("| if-%s| < ", _opname);		                    \
             ILOGV("|if-%s v%d,v%d,-", (_opname), vsrc1, vsrc2);             \
             FINISH(2);                                                      \
@@ -131,6 +136,8 @@ GOTO_TARGET_DECL(exceptionThrown);
     HANDLE_OPCODE(_opcode /*vAA, +BBBB*/)                                   \
         vsrc1 = INST_AA(inst);                                              \
         if ((s4) GET_REGISTER(vsrc1) _cmp 0) {                              \
+            AI_LOGE_W_METHOD("[AI] [brancht] (%s v%d 0) [%s]", AI_STR(_cmp), vsrc1, (_opname)) \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vsrc1)) \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
             TMLOGE("| if-%s| > ", _opname);                                 \	    
             ILOGV("|if-%s v%d,+0x%04x", (_opname), vsrc1, branchOffset);    \
@@ -139,6 +146,8 @@ GOTO_TARGET_DECL(exceptionThrown);
                 PERIODIC_CHECKS(branchOffset);                              \
             FINISH(branchOffset);                                           \
         } else {                                                            \
+            AI_LOGE_W_METHOD("[AI] [branchf] (not (%s v%d 0)) [%s]", AI_STR(_cmp), vsrc1, (_opname)) \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vsrc1)) \
             TMLOGE("| if-%s| < ", _opname);                                 \
             ILOGV("|if-%s v%d,-", (_opname), vsrc1);                        \
             FINISH(2);                                                      \
@@ -163,6 +172,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         srcRegs = FETCH(1);                                                 \
         vsrc1 = srcRegs & 0xff;                                             \
         vsrc2 = srcRegs >> 8;                                               \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d v%d)) [%s-int]", \
+            vdst, AI_STR(_op), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vsrc1), GET_REGISTER(vsrc2)) \
         ILOGV("|%s-int v%d,v%d", (_opname), vdst, vsrc1);                   \
         if (_chkdiv != 0) {                                                 \
             s4 firstVal, secondVal, result;                                 \
@@ -217,6 +229,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         vdst = INST_A(inst);                                                \
         vsrc1 = INST_B(inst);                                               \
         vsrc2 = FETCH(1);                                                   \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d %d)) [%s-int/lit16]", \
+            vdst, AI_STR(_op), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vsrc1), vsrc2) \
         ILOGV("|%s-int/lit16 v%d,v%d,#+0x%04x",                             \
             (_opname), vdst, vsrc1, vsrc2);                                 \
         if (_chkdiv != 0) {                                                 \
@@ -254,6 +269,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         litInfo = FETCH(1);                                                 \
         vsrc1 = litInfo & 0xff;                                             \
         vsrc2 = litInfo >> 8;       /* constant */                          \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d %d)) [%s-int/lit8]", \
+            vdst, AI_STR(_op), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vsrc1), vsrc2) \
         ILOGV("|%s-int/lit8 v%d,v%d,#+0x%02x",                              \
             (_opname), vdst, vsrc1, vsrc2);                                 \
         if (_chkdiv != 0) {                                                 \
@@ -305,6 +323,9 @@ GOTO_TARGET_DECL(exceptionThrown);
     HANDLE_OPCODE(_opcode /*vA, vB*/)                                       \
         vdst = INST_A(inst);                                                \
         vsrc1 = INST_B(inst);                                               \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d v%d)) [%s-int-2addr]",\
+            vdst, AI_STR(_op), vdst, vsrc1, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vdst), vsrc1) \
         ILOGV("|%s-int-2addr v%d,v%d", (_opname), vdst, vsrc1);             \
         if (_chkdiv != 0) {                                                 \
             s4 firstVal, secondVal, result;                                 \
@@ -611,6 +632,9 @@ GOTO_TARGET_DECL(exceptionThrown);
             if (ifield == NULL)                                             \
                 GOTO_exceptionThrown();                                     \
         }                                                                   \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d obj%p-%d) [iget%s]",     \
+            vdst, obj, ref, (_opname))                \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
         SET_REGISTER##_regsize(vdst,                                        \
             dvmGetField##_ftype(obj, ifield->byteOffset));                  \
         ILOGV("+ IGET '%s'=0x%08llx", ifield->field.name,                   \
@@ -635,6 +659,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         obj = (Object*) GET_REGISTER(vsrc1);                                \
         if (!checkForNullExportPC(obj, fp, pc))                             \
             GOTO_exceptionThrown();                                         \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d obj%p-%d) [iget-quick%s]",     \
+            vdst, obj, ref, (_opname))                \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
         SET_REGISTER##_regsize(vdst, dvmGetField##_ftype(obj, ref));        \
         ILOGV("+ IGETQ %d=0x%08llx", ref,                                   \
             (u8) GET_REGISTER##_regsize(vdst));                             \
@@ -667,6 +694,11 @@ GOTO_TARGET_DECL(exceptionThrown);
             if (ifield == NULL)                                             \
                 GOTO_exceptionThrown();                                     \
         }                                                                   \
+        if (ifield != NULL) {                                                \
+            AI_LOGE_W_METHOD("[AI] [assign] (= obj%p-%d v%d) [iput%s]",        \
+                obj, (int)ifield->byteOffset, vdst, (_opname))                \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
+        }   
         dvmSetField##_ftype(obj, ifield->byteOffset,                        \
             GET_REGISTER##_regsize(vdst));                                  \
         ILOGV("+ IPUT '%s'=0x%08llx", ifield->field.name,                   \
@@ -690,6 +722,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         obj = (Object*) GET_REGISTER(vsrc1);                                \
         if (!checkForNullExportPC(obj, fp, pc))                             \
             GOTO_exceptionThrown();                                         \
+        AI_LOGE_W_METHOD("[AI] [assign] (= obj%p-%d v%d) [iput-quick%s]",           \
+            obj , ref, vdst, (_opname))                \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
         dvmSetField##_ftype(obj, ref, GET_REGISTER##_regsize(vdst));        \
         ILOGV("+ IPUTQ %d=0x%08llx", ref,                                   \
             (u8) GET_REGISTER##_regsize(vdst));                             \

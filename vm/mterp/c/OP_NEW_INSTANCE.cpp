@@ -7,6 +7,7 @@ HANDLE_OPCODE(OP_NEW_INSTANCE /*vAA, class@BBBB*/)
 
         vdst = INST_AA(inst);
         ref = FETCH(1);
+        AI_LOGE_W_METHOD("[AI] [new-instance] v%d, class@0x%04x", vdst, ref)
         ILOGV("|new-instance v%d,class@0x%04x", vdst, ref);
         clazz = dvmDexGetResolvedClass(methodClassDex, ref);
         if (clazz == NULL) {

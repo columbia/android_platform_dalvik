@@ -7,6 +7,7 @@ HANDLE_OPCODE(OP_CONST_WIDE /*vAA, #+BBBBBBBBBBBBBBBB*/)
         tmp |= (u8)FETCH(2) << 16;
         tmp |= (u8)FETCH(3) << 32;
         tmp |= (u8)FETCH(4) << 48;
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d %llu) [const-wide]", vdst, tmp)
         ILOGV("|const-wide v%d,#0x%08llx", vdst, tmp);
         SET_REGISTER_WIDE(vdst, tmp);
 /* ifdef WITH_TAINT_TRACKING */

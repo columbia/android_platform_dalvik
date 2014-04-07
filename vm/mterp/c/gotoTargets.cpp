@@ -767,6 +767,7 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
         //    methodCallRange, methodToCall, count, regs);
         //printf(" --> %s.%s %s\n", methodToCall->clazz->descriptor,
         //    methodToCall->name, methodToCall->shorty);
+        AI_FUNCTION_CALL;
 
         u4* outs;
         int i;
@@ -829,27 +830,73 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
             // This version executes fewer instructions but is larger
             // overall.  Seems to be a teensy bit faster.
             assert((vdst >> 16) == 0);  // 16 bits -or- high 16 bits clear
+
+
+            // put all outs in aiArgs, regI is a temp
+            char aiArgs[22] = "";
+            char regI[5];
+
+            #define AI_APPEND_REGI(regi) \
+            AI_BEGIN \
+            if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {\
+                sprintf(regI, "%d ", regi); \
+                strcat(aiArgs, regI); \
+            } \
+            AI_END
+
 #ifdef WITH_TAINT_TRACKING
             if (nativeTarget) {
             	switch (count) {
             	case 5:
             		outs[4] = GET_REGISTER(vsrc1 & 0x0f);
+                    AI_PRINT_OUT_REG(vsrc1 & 0x0f)
+                    AI_APPEND_REGI(vsrc1 & 0x0f)
+
             		outs[count+5] = GET_REGISTER_TAINT(vsrc1 & 0x0f);
             	case 4:
             		outs[3] = GET_REGISTER(vdst >> 12);
+                    AI_PRINT_OUT_REG(vdst >> 12v)
+                    AI_APPEND_REGI(vdst >> 12)
+
             		outs[count+4] = GET_REGISTER_TAINT(vdst >> 12);
             	case 3:
             		outs[2] = GET_REGISTER((vdst & 0x0f00) >> 8);
+                    AI_PRINT_OUT_REG((vdst & 0x0f00) >> 8)
+                    AI_APPEND_REGI((vdst & 0x0f00) >> 8)
+
             		outs[count+3] = GET_REGISTER_TAINT((vdst & 0x0f00) >> 8);
             	case 2:
             		outs[1] = GET_REGISTER((vdst & 0x00f0) >> 4);
+                    AI_PRINT_OUT_REG((vdst & 0x00f0) >> 4)
+                    AI_APPEND_REGI((vdst & 0x00f0) >> 4)
+
             		outs[count+2] = GET_REGISTER_TAINT((vdst & 0x00f0) >> 4);
             	case 1:
             		outs[0] = GET_REGISTER(vdst & 0x0f);
+                    AI_PRINT_OUT_REG((vdst & 0x0f))
+                    AI_APPEND_REGI(vdst & 0x0f)
+
             		outs[count+1] = GET_REGISTER_TAINT(vdst & 0x0f);
             	default:
             		;
             	}
+
+            AI_BEGIN
+            // filter out calls into system funcs for now
+            // may change this behavior later
+            if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {
+                LOGE("[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]",
+                    methodToCall->clazz->descriptor, methodToCall->name,
+                    count, aiArgs, methodToCall->registersSize, 
+                    curMethod->clazz->descriptor, curMethod->name);
+                fprintf(aiFile, "[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]\n",
+                    methodToCall->clazz->descriptor, methodToCall->name,
+                    count, aiArgs, methodToCall->registersSize, 
+                    curMethod->clazz->descriptor, curMethod->name);
+                fflush(aiFile);
+            }
+            AI_END
+
             	/* clear the native hack */
             	outs[count] = TAINT_CLEAR;
             } else { /* interpreted target */

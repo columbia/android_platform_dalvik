@@ -5,6 +5,7 @@ HANDLE_OPCODE(OP_CONST /*vAA, #+BBBBBBBB*/)
         vdst = INST_AA(inst);
         tmp = FETCH(1);
         tmp |= (u4)FETCH(2) << 16;
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d %u) [const]", vdst, tmp)
         ILOGV("|const v%d,#0x%08x", vdst, tmp);
         SET_REGISTER(vdst, tmp);
 /* ifdef WITH_TAINT_TRACKING */

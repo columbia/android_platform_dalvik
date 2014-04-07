@@ -1,6 +1,8 @@
 HANDLE_OPCODE($opcode /*vAAAA, vBBBB*/)
     vdst = FETCH(1);
     vsrc1 = FETCH(2);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move%s/16]", vdst, vsrc1, 
+        (INST_INST(inst) == OP_MOVE_16) ? "" : "-object")
     ILOGV("|move%s/16 v%d,v%d %s(v%d=0x%08x)",
         (INST_INST(inst) == OP_MOVE_16) ? "" : "-object", vdst, vsrc1,
         kSpacing, vdst, GET_REGISTER(vsrc1));

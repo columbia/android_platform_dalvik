@@ -1,5 +1,7 @@
 HANDLE_OPCODE($opcode /*vAA*/)
     vdst = INST_AA(inst);
+    AI_LOGE_W_METHOD("[AI] [move-result%s] v%d (=0x%08x)",
+        (INST_INST(inst) == OP_MOVE_RESULT) ? "" : "-object", vdst, retval.i)
     ILOGV("|move-result%s v%d %s(v%d=0x%08x)",
          (INST_INST(inst) == OP_MOVE_RESULT) ? "" : "-object",
          vdst, kSpacing+4, vdst,retval.i);

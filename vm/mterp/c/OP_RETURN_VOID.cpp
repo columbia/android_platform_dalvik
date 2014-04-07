@@ -1,4 +1,5 @@
 HANDLE_OPCODE(OP_RETURN_VOID /**/)
+    AI_LOGE_W_METHOD("[AI] [return-void] %s [return-void]", "NO REGISTER")
     ILOGV("|return-void");
 #ifndef NDEBUG
     retval.j = 0xababababULL;    // placate valgrind

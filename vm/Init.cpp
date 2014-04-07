@@ -1246,6 +1246,9 @@ std::string dvmStartup(int argc, const char* const argv[],
         return "syntax error";
     }
 
+    //IG output destination.
+    aiFile = fopen("/data/ai.txt", "a");
+
 #if WITH_EXTRA_GC_CHECKS > 1
     /* only "portable" interp has the extra goodies */
     if (gDvm.executionMode != kExecutionModeInterpPortable) {

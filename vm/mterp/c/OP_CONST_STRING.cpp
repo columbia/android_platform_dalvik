@@ -3,6 +3,7 @@ HANDLE_OPCODE(OP_CONST_STRING /*vAA, string@BBBB*/)
         StringObject* strObj;
 
         vdst = INST_AA(inst);
+        //AI_LOGE_W_METHOD("%s %s [CONST STRING] (= v%d string@0x%04x)", curMethod->clazz->descriptor, curMethod->name, vdst, ref);
         ref = FETCH(1);
         ILOGV("|const-string v%d string@0x%04x", vdst, ref);
         strObj = dvmDexGetResolvedString(methodClassDex, ref);
