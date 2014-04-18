@@ -21,9 +21,6 @@
 #include <math.h>                   // needed for fmod, fmodf
 #include "mterp/common/FindInterface.h"
 
-#include <stdio.h>
-FILE *aiFile;
-
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -590,7 +587,7 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
             (strstr(curMethod->clazz->descriptor, "HelloAndroid") != NULL) || \
             (strstr(methodToCall->clazz->descriptor, "concolic") != NULL) || \
             (strstr(curMethod->clazz->descriptor, "concolic") != NULL)) {\
-            LOGE("[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
+            ALOGE("[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
             curMethod->clazz->descriptor, curMethod->name, curMethod->shorty, \
             methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty); \
             \
@@ -632,7 +629,7 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
 
 #define AI_LOGE_W_METHOD(format, ...) \
     AI_BEGIN \
-    LOGE(format "  -- [%s, %s]", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
+    ALOGE(format "  -- [%s, %s]", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
     fprintf(aiFile, format "  -- [%s, %s]\n", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
     fflush(aiFile); \
     AI_END
