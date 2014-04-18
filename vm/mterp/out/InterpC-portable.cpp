@@ -577,8 +577,18 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
     return true;
 }
 
+
+/*
+// Switch: turn on for non-system app only
+// #define AI_BEGIN do { if ((strstr(curMethod->clazz->descriptor, "com/android/") == NULL) && \
+//                               (strstr(curMethod->clazz->descriptor, "Ljava/") == NULL) && \
+//                               (strstr(curMethod->clazz->descriptor, "Ldalvik/") == NULL) && \
+//                               (strstr(curMethod->clazz->descriptor, "Lcom/ibm") == NULL) && \
+//                               (strstr(curMethod->clazz->descriptor, "Landroid/") == NULL)) {       
+*/
+
 #define AI_BEGIN do { if ((strstr(curMethod->clazz->descriptor, "HelloAndroid") != NULL) || \
-                          (strstr(curMethod->clazz->descriptor, "concolic") != NULL)) {
+                          (strstr(curMethod->clazz->descriptor, "concolic") != NULL)) { 
 #define AI_END }; } while (0);
 
 #define AI_FUNCTION_CALL \
@@ -587,7 +597,7 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
             (strstr(curMethod->clazz->descriptor, "HelloAndroid") != NULL) || \
             (strstr(methodToCall->clazz->descriptor, "concolic") != NULL) || \
             (strstr(curMethod->clazz->descriptor, "concolic") != NULL)) {\
-            LOGE("[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
+            ALOGE("[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
             curMethod->clazz->descriptor, curMethod->name, curMethod->shorty, \
             methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty); \
             \
@@ -596,7 +606,7 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
             methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty); \
             fflush(aiFile);   \
         };\
-    } while (0)
+    } while (0) 
 
 // convert (_op) into "_op", where _op is also a macro
 // thus we need a one-step indirection to expand _op before # it to a string
@@ -633,6 +643,9 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
     fprintf(aiFile, format "  -- [%s, %s]\n", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
     fflush(aiFile); \
     AI_END
+
+
+
 
 
 /* File: portable/stubdefs.cpp */
@@ -837,6 +850,8 @@ GOTO_TARGET_DECL(exceptionThrown);
         vsrc2 = INST_B(inst);                                               \
         if ((s4) GET_REGISTER(vsrc1) _cmp (s4) GET_REGISTER(vsrc2)) {       \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
+        AI_LOGE_W_METHOD("[AI] [brancht] (%s v%d v%d) [%s]", AI_STR(_cmp), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d ", GET_REGISTER(vsrc1), GET_REGISTER(vsrc2)) \
 	    TMLOGE("| if-%s| > ", _opname);                                 \
             ILOGV("|if-%s v%d,v%d,+0x%04x", (_opname), vsrc1, vsrc2,        \
                 branchOffset);                                              \
@@ -845,6 +860,8 @@ GOTO_TARGET_DECL(exceptionThrown);
                 PERIODIC_CHECKS(branchOffset);                              \
             FINISH(branchOffset);                                           \
         } else {                                                            \
+            AI_LOGE_W_METHOD("[AI] [branchf] (not (%s v%d v%d)) [%s]", AI_STR(_cmp), vsrc1, vsrc2, (_opname)) \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d ", GET_REGISTER(vsrc1), GET_REGISTER(vsrc2)) \
             TMLOGE("| if-%s| < ", _opname);		                    \
             ILOGV("|if-%s v%d,v%d,-", (_opname), vsrc1, vsrc2);             \
             FINISH(2);                                                      \
@@ -854,6 +871,8 @@ GOTO_TARGET_DECL(exceptionThrown);
     HANDLE_OPCODE(_opcode /*vAA, +BBBB*/)                                   \
         vsrc1 = INST_AA(inst);                                              \
         if ((s4) GET_REGISTER(vsrc1) _cmp 0) {                              \
+            AI_LOGE_W_METHOD("[AI] [brancht] (%s v%d 0) [%s]", AI_STR(_cmp), vsrc1, (_opname)) \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vsrc1)) \
             int branchOffset = (s2)FETCH(1);    /* sign-extended */         \
             TMLOGE("| if-%s| > ", _opname);                                 \	    
             ILOGV("|if-%s v%d,+0x%04x", (_opname), vsrc1, branchOffset);    \
@@ -862,6 +881,8 @@ GOTO_TARGET_DECL(exceptionThrown);
                 PERIODIC_CHECKS(branchOffset);                              \
             FINISH(branchOffset);                                           \
         } else {                                                            \
+            AI_LOGE_W_METHOD("[AI] [branchf] (not (%s v%d 0)) [%s]", AI_STR(_cmp), vsrc1, (_opname)) \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vsrc1)) \
             TMLOGE("| if-%s| < ", _opname);                                 \
             ILOGV("|if-%s v%d,-", (_opname), vsrc1);                        \
             FINISH(2);                                                      \
@@ -886,6 +907,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         srcRegs = FETCH(1);                                                 \
         vsrc1 = srcRegs & 0xff;                                             \
         vsrc2 = srcRegs >> 8;                                               \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d v%d)) [%s-int]", \
+            vdst, AI_STR(_op), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vsrc1), GET_REGISTER(vsrc2)) \
         ILOGV("|%s-int v%d,v%d", (_opname), vdst, vsrc1);                   \
         if (_chkdiv != 0) {                                                 \
             s4 firstVal, secondVal, result;                                 \
@@ -940,6 +964,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         vdst = INST_A(inst);                                                \
         vsrc1 = INST_B(inst);                                               \
         vsrc2 = FETCH(1);                                                   \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d %d)) [%s-int/lit16]", \
+            vdst, AI_STR(_op), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vsrc1), vsrc2) \
         ILOGV("|%s-int/lit16 v%d,v%d,#+0x%04x",                             \
             (_opname), vdst, vsrc1, vsrc2);                                 \
         if (_chkdiv != 0) {                                                 \
@@ -977,6 +1004,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         litInfo = FETCH(1);                                                 \
         vsrc1 = litInfo & 0xff;                                             \
         vsrc2 = litInfo >> 8;       /* constant */                          \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d %d)) [%s-int/lit8]", \
+            vdst, AI_STR(_op), vsrc1, vsrc2, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vsrc1), vsrc2) \
         ILOGV("|%s-int/lit8 v%d,v%d,#+0x%02x",                              \
             (_opname), vdst, vsrc1, vsrc2);                                 \
         if (_chkdiv != 0) {                                                 \
@@ -1028,6 +1058,9 @@ GOTO_TARGET_DECL(exceptionThrown);
     HANDLE_OPCODE(_opcode /*vA, vB*/)                                       \
         vdst = INST_A(inst);                                                \
         vsrc1 = INST_B(inst);                                               \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (%s v%d v%d)) [%s-int-2addr]",\
+            vdst, AI_STR(_op), vdst, vsrc1, (_opname)) \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d %d", GET_REGISTER(vdst), vsrc1) \
         ILOGV("|%s-int-2addr v%d,v%d", (_opname), vdst, vsrc1);             \
         if (_chkdiv != 0) {                                                 \
             s4 firstVal, secondVal, result;                                 \
@@ -1334,6 +1367,9 @@ GOTO_TARGET_DECL(exceptionThrown);
             if (ifield == NULL)                                             \
                 GOTO_exceptionThrown();                                     \
         }                                                                   \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d obj%p-%d) [iget%s]",     \
+            vdst, obj, ref, (_opname))                \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
         SET_REGISTER##_regsize(vdst,                                        \
             dvmGetField##_ftype(obj, ifield->byteOffset));                  \
         ILOGV("+ IGET '%s'=0x%08llx", ifield->field.name,                   \
@@ -1358,6 +1394,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         obj = (Object*) GET_REGISTER(vsrc1);                                \
         if (!checkForNullExportPC(obj, fp, pc))                             \
             GOTO_exceptionThrown();                                         \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d obj%p-%d) [iget-quick%s]",     \
+            vdst, obj, ref, (_opname))                \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
         SET_REGISTER##_regsize(vdst, dvmGetField##_ftype(obj, ref));        \
         ILOGV("+ IGETQ %d=0x%08llx", ref,                                   \
             (u8) GET_REGISTER##_regsize(vdst));                             \
@@ -1390,6 +1429,11 @@ GOTO_TARGET_DECL(exceptionThrown);
             if (ifield == NULL)                                             \
                 GOTO_exceptionThrown();                                     \
         }                                                                   \
+        if (ifield != NULL) {                                                \
+            AI_LOGE_W_METHOD("[AI] [assign] (= obj%p-%d v%d) [iput%s]",        \
+                obj, (int)ifield->byteOffset, vdst, (_opname))                \
+            AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
+        }  \ 
         dvmSetField##_ftype(obj, ifield->byteOffset,                        \
             GET_REGISTER##_regsize(vdst));                                  \
         ILOGV("+ IPUT '%s'=0x%08llx", ifield->field.name,                   \
@@ -1413,6 +1457,9 @@ GOTO_TARGET_DECL(exceptionThrown);
         obj = (Object*) GET_REGISTER(vsrc1);                                \
         if (!checkForNullExportPC(obj, fp, pc))                             \
             GOTO_exceptionThrown();                                         \
+        AI_LOGE_W_METHOD("[AI] [assign] (= obj%p-%d v%d) [iput-quick%s]",           \
+            obj , ref, vdst, (_opname))                \
+        AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
         dvmSetField##_ftype(obj, ref, GET_REGISTER##_regsize(vdst));        \
         ILOGV("+ IPUTQ %d=0x%08llx", ref,                                   \
             (u8) GET_REGISTER##_regsize(vdst));                             \
@@ -1612,6 +1659,8 @@ OP_END
 HANDLE_OPCODE(OP_MOVE /*vA, vB*/)
     vdst = INST_A(inst);
     vsrc1 = INST_B(inst);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move%s]", vdst, vsrc1, 
+        (INST_INST(inst) == OP_MOVE) ? "" : "-object")
     ILOGV("|move%s v%d,v%d %s(v%d=0x%08x)",
         (INST_INST(inst) == OP_MOVE) ? "" : "-object", vdst, vsrc1,
         kSpacing, vdst, GET_REGISTER(vsrc1));
@@ -1626,6 +1675,8 @@ OP_END
 HANDLE_OPCODE(OP_MOVE_FROM16 /*vAA, vBBBB*/)
     vdst = INST_AA(inst);
     vsrc1 = FETCH(1);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move%s/from16]", vdst, vsrc1, 
+        (INST_INST(inst) == OP_MOVE_FROM16) ? "" : "-object")
     ILOGV("|move%s/from16 v%d,v%d %s(v%d=0x%08x)",
         (INST_INST(inst) == OP_MOVE_FROM16) ? "" : "-object", vdst, vsrc1,
         kSpacing, vdst, GET_REGISTER(vsrc1));
@@ -1640,6 +1691,8 @@ OP_END
 HANDLE_OPCODE(OP_MOVE_16 /*vAAAA, vBBBB*/)
     vdst = FETCH(1);
     vsrc1 = FETCH(2);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move%s/16]", vdst, vsrc1, 
+        (INST_INST(inst) == OP_MOVE_16) ? "" : "-object")
     ILOGV("|move%s/16 v%d,v%d %s(v%d=0x%08x)",
         (INST_INST(inst) == OP_MOVE_16) ? "" : "-object", vdst, vsrc1,
         kSpacing, vdst, GET_REGISTER(vsrc1));
@@ -1656,6 +1709,19 @@ HANDLE_OPCODE(OP_MOVE_WIDE /*vA, vB*/)
      * "move-wide v6, v7" and "move-wide v7, v6" */
     vdst = INST_A(inst);
     vsrc1 = INST_B(inst);
+
+    if (vdst == vsrc1 + 1) {
+        /* move-wide v2, v1 
+        => (= v3, v2)
+        => (= v2, v1)
+        */
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide 1]", vdst + 1, vsrc1 + 1)
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide 0]", vdst, vsrc1)
+    } else {
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide 0]", vdst, vsrc1)
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide 1]", vdst + 1, vsrc1 + 1)
+    }
+
     ILOGV("|move-wide v%d,v%d %s(v%d=0x%08llx)", vdst, vsrc1,
         kSpacing+5, vdst, GET_REGISTER_WIDE(vsrc1));
     SET_REGISTER_WIDE(vdst, GET_REGISTER_WIDE(vsrc1));
@@ -1669,6 +1735,16 @@ OP_END
 HANDLE_OPCODE(OP_MOVE_WIDE_FROM16 /*vAA, vBBBB*/)
     vdst = INST_AA(inst);
     vsrc1 = FETCH(1);
+    if (vdst == vsrc1 + 1) {
+        /* move-wide v2, v1 
+        => (= v3, v2)
+        => (= v2, v1) */
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/from16 1]", vdst + 1, vsrc1 + 1)
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/from16 0]", vdst, vsrc1)
+    } else {
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/from16 0]", vdst, vsrc1)
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/from16 1]", vdst + 1, vsrc1 + 1)
+    }
     ILOGV("|move-wide/from16 v%d,v%d  (v%d=0x%08llx)", vdst, vsrc1,
         vdst, GET_REGISTER_WIDE(vsrc1));
     SET_REGISTER_WIDE(vdst, GET_REGISTER_WIDE(vsrc1));
@@ -1682,6 +1758,17 @@ OP_END
 HANDLE_OPCODE(OP_MOVE_WIDE_16 /*vAAAA, vBBBB*/)
     vdst = FETCH(1);
     vsrc1 = FETCH(2);
+    if (vdst == vsrc1 + 1) {
+        /* move-wide v2, v1 
+        => (= v3, v2)
+        => (= v2, v1)
+        */
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/16 1]", vdst + 1, vsrc1 + 1)
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/16 0]", vdst, vsrc1)
+    } else {
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/16 0]", vdst, vsrc1)
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move-wide/16 1]", vdst + 1, vsrc1 + 1)
+    }
     ILOGV("|move-wide/16 v%d,v%d %s(v%d=0x%08llx)", vdst, vsrc1,
         kSpacing+8, vdst, GET_REGISTER_WIDE(vsrc1));
     SET_REGISTER_WIDE(vdst, GET_REGISTER_WIDE(vsrc1));
@@ -1696,6 +1783,8 @@ OP_END
 HANDLE_OPCODE(OP_MOVE_OBJECT /*vA, vB*/)
     vdst = INST_A(inst);
     vsrc1 = INST_B(inst);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move%s]", vdst, vsrc1, 
+        (INST_INST(inst) == OP_MOVE) ? "" : "-object")
     ILOGV("|move%s v%d,v%d %s(v%d=0x%08x)",
         (INST_INST(inst) == OP_MOVE) ? "" : "-object", vdst, vsrc1,
         kSpacing, vdst, GET_REGISTER(vsrc1));
@@ -1712,6 +1801,8 @@ OP_END
 HANDLE_OPCODE(OP_MOVE_OBJECT_FROM16 /*vAA, vBBBB*/)
     vdst = INST_AA(inst);
     vsrc1 = FETCH(1);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move%s/from16]", vdst, vsrc1, 
+        (INST_INST(inst) == OP_MOVE_FROM16) ? "" : "-object")
     ILOGV("|move%s/from16 v%d,v%d %s(v%d=0x%08x)",
         (INST_INST(inst) == OP_MOVE_FROM16) ? "" : "-object", vdst, vsrc1,
         kSpacing, vdst, GET_REGISTER(vsrc1));
@@ -1728,6 +1819,8 @@ OP_END
 HANDLE_OPCODE(OP_MOVE_OBJECT_16 /*vAAAA, vBBBB*/)
     vdst = FETCH(1);
     vsrc1 = FETCH(2);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d v%d) [move%s/16]", vdst, vsrc1, 
+        (INST_INST(inst) == OP_MOVE_16) ? "" : "-object")
     ILOGV("|move%s/16 v%d,v%d %s(v%d=0x%08x)",
         (INST_INST(inst) == OP_MOVE_16) ? "" : "-object", vdst, vsrc1,
         kSpacing, vdst, GET_REGISTER(vsrc1));
@@ -1742,6 +1835,8 @@ OP_END
 /* File: c/OP_MOVE_RESULT.cpp */
 HANDLE_OPCODE(OP_MOVE_RESULT /*vAA*/)
     vdst = INST_AA(inst);
+    AI_LOGE_W_METHOD("[AI] [move-result%s] v%d (=0x%08x)",
+        (INST_INST(inst) == OP_MOVE_RESULT) ? "" : "-object", vdst, retval.i)
     ILOGV("|move-result%s v%d %s(v%d=0x%08x)",
          (INST_INST(inst) == OP_MOVE_RESULT) ? "" : "-object",
          vdst, kSpacing+4, vdst,retval.i);
@@ -1755,6 +1850,7 @@ OP_END
 /* File: c/OP_MOVE_RESULT_WIDE.cpp */
 HANDLE_OPCODE(OP_MOVE_RESULT_WIDE /*vAA*/)
     vdst = INST_AA(inst);
+    AI_LOGE_W_METHOD("[AI] [move-result-wide] v%d (0x%08llx)", vdst, retval.j)
     ILOGV("|move-result-wide v%d %s(0x%08llx)", vdst, kSpacing, retval.j);
     SET_REGISTER_WIDE(vdst, retval.j);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1767,6 +1863,8 @@ OP_END
 /* File: c/OP_MOVE_RESULT.cpp */
 HANDLE_OPCODE(OP_MOVE_RESULT_OBJECT /*vAA*/)
     vdst = INST_AA(inst);
+    AI_LOGE_W_METHOD("[AI] [move-result%s] v%d (=0x%08x)",
+        (INST_INST(inst) == OP_MOVE_RESULT) ? "" : "-object", vdst, retval.i)
     ILOGV("|move-result%s v%d %s(v%d=0x%08x)",
          (INST_INST(inst) == OP_MOVE_RESULT) ? "" : "-object",
          vdst, kSpacing+4, vdst,retval.i);
@@ -1793,6 +1891,7 @@ OP_END
 
 /* File: c/OP_RETURN_VOID.cpp */
 HANDLE_OPCODE(OP_RETURN_VOID /**/)
+    AI_LOGE_W_METHOD("[AI] [return-void] %s [return-void]", "NO REGISTER")
     ILOGV("|return-void");
 #ifndef NDEBUG
     retval.j = 0xababababULL;    // placate valgrind
@@ -1806,6 +1905,10 @@ OP_END
 /* File: c/OP_RETURN.cpp */
 HANDLE_OPCODE(OP_RETURN /*vAA*/)
     vsrc1 = INST_AA(inst);
+    if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {
+        AI_LOGE_W_METHOD("[AI] [return] v%d [return%s]",
+            vsrc1, (INST_INST(inst) == OP_RETURN) ? "" : "-object")
+    }
     ILOGV("|return%s v%d",
         (INST_INST(inst) == OP_RETURN) ? "" : "-object", vsrc1);
     retval.i = GET_REGISTER(vsrc1);
@@ -1818,6 +1921,7 @@ OP_END
 /* File: c/OP_RETURN_WIDE.cpp */
 HANDLE_OPCODE(OP_RETURN_WIDE /*vAA*/)
     vsrc1 = INST_AA(inst);
+    AI_LOGE_W_METHOD("[AI] [return] v%d [return-wide]", vsrc1)
     ILOGV("|return-wide v%d", vsrc1);
     retval.j = GET_REGISTER_WIDE(vsrc1);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1830,6 +1934,10 @@ OP_END
 /* File: c/OP_RETURN.cpp */
 HANDLE_OPCODE(OP_RETURN_OBJECT /*vAA*/)
     vsrc1 = INST_AA(inst);
+    if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {
+        AI_LOGE_W_METHOD("[AI] [return] v%d [return%s]",
+            vsrc1, (INST_INST(inst) == OP_RETURN) ? "" : "-object")
+    }
     ILOGV("|return%s v%d",
         (INST_INST(inst) == OP_RETURN) ? "" : "-object", vsrc1);
     retval.i = GET_REGISTER(vsrc1);
@@ -1847,6 +1955,7 @@ HANDLE_OPCODE(OP_CONST_4 /*vA, #+B*/)
 
         vdst = INST_A(inst);
         tmp = (s4) (INST_B(inst) << 28) >> 28;  // sign extend 4-bit value
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d %d) [const/4 444]", vdst, (s4) tmp)
         ILOGV("|const/4 v%d,#0x%02x", vdst, (s4)tmp);
         SET_REGISTER(vdst, tmp);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1860,6 +1969,7 @@ OP_END
 HANDLE_OPCODE(OP_CONST_16 /*vAA, #+BBBB*/)
     vdst = INST_AA(inst);
     vsrc1 = FETCH(1);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d %d) [const/16]", vdst, (s2)vsrc1)
     ILOGV("|const/16 v%d,#0x%04x", vdst, (s2)vsrc1);
     SET_REGISTER(vdst, (s2) vsrc1);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1876,6 +1986,7 @@ HANDLE_OPCODE(OP_CONST /*vAA, #+BBBBBBBB*/)
         vdst = INST_AA(inst);
         tmp = FETCH(1);
         tmp |= (u4)FETCH(2) << 16;
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d %u) [const]", vdst, tmp)
         ILOGV("|const v%d,#0x%08x", vdst, tmp);
         SET_REGISTER(vdst, tmp);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1901,6 +2012,7 @@ OP_END
 HANDLE_OPCODE(OP_CONST_WIDE_16 /*vAA, #+BBBB*/)
     vdst = INST_AA(inst);
     vsrc1 = FETCH(1);
+    AI_LOGE_W_METHOD("[AI] [assign] (= v%d %d) [const-wide/16]", vdst, (s2)vsrc1)
     ILOGV("|const-wide/16 v%d,#0x%04x", vdst, (s2)vsrc1);
     SET_REGISTER_WIDE(vdst, (s2)vsrc1);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1917,6 +2029,7 @@ HANDLE_OPCODE(OP_CONST_WIDE_32 /*vAA, #+BBBBBBBB*/)
         vdst = INST_AA(inst);
         tmp = FETCH(1);
         tmp |= (u4)FETCH(2) << 16;
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d %d) [const-wide/32]", vdst, tmp)
         ILOGV("|const-wide/32 v%d,#0x%08x", vdst, tmp);
         SET_REGISTER_WIDE(vdst, (s4) tmp);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1936,6 +2049,7 @@ HANDLE_OPCODE(OP_CONST_WIDE /*vAA, #+BBBBBBBBBBBBBBBB*/)
         tmp |= (u8)FETCH(2) << 16;
         tmp |= (u8)FETCH(3) << 32;
         tmp |= (u8)FETCH(4) << 48;
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d %llu) [const-wide]", vdst, tmp)
         ILOGV("|const-wide v%d,#0x%08llx", vdst, tmp);
         SET_REGISTER_WIDE(vdst, tmp);
 /* ifdef WITH_TAINT_TRACKING */
@@ -1963,6 +2077,7 @@ HANDLE_OPCODE(OP_CONST_STRING /*vAA, string@BBBB*/)
         StringObject* strObj;
 
         vdst = INST_AA(inst);
+        //AI_LOGE_W_METHOD("%s %s [CONST STRING] (= v%d string@0x%04x)", curMethod->clazz->descriptor, curMethod->name, vdst, ref);
         ref = FETCH(1);
         ILOGV("|const-string v%d string@0x%04x", vdst, ref);
         strObj = dvmDexGetResolvedString(methodClassDex, ref);
@@ -2179,6 +2294,7 @@ HANDLE_OPCODE(OP_NEW_INSTANCE /*vAA, class@BBBB*/)
 
         vdst = INST_AA(inst);
         ref = FETCH(1);
+        AI_LOGE_W_METHOD("[AI] [new-instance] v%d, class@0x%04x", vdst, ref)
         ILOGV("|new-instance v%d,class@0x%04x", vdst, ref);
         clazz = dvmDexGetResolvedClass(methodClassDex, ref);
         if (clazz == NULL) {
@@ -4406,6 +4522,7 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
         //    methodCallRange, methodToCall, count, regs);
         //printf(" --> %s.%s %s\n", methodToCall->clazz->descriptor,
         //    methodToCall->name, methodToCall->shorty);
+        AI_FUNCTION_CALL;
 
         u4* outs;
         int i;
@@ -4468,27 +4585,73 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
             // This version executes fewer instructions but is larger
             // overall.  Seems to be a teensy bit faster.
             assert((vdst >> 16) == 0);  // 16 bits -or- high 16 bits clear
+
+
+            // put all outs in aiArgs, regI is a temp
+            char aiArgs[22] = "";
+            char regI[5];
+
+            #define AI_APPEND_REGI(regi) \
+            AI_BEGIN \
+            if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {\
+                sprintf(regI, "%d ", regi); \
+                strcat(aiArgs, regI); \
+            } \
+            AI_END
+
 #ifdef WITH_TAINT_TRACKING
             if (nativeTarget) {
             	switch (count) {
             	case 5:
             		outs[4] = GET_REGISTER(vsrc1 & 0x0f);
+                    AI_PRINT_OUT_REG(vsrc1 & 0x0f)
+                    AI_APPEND_REGI(vsrc1 & 0x0f)
+
             		outs[count+5] = GET_REGISTER_TAINT(vsrc1 & 0x0f);
             	case 4:
             		outs[3] = GET_REGISTER(vdst >> 12);
+                    AI_PRINT_OUT_REG(vdst >> 12)
+                    AI_APPEND_REGI(vdst >> 12)
+
             		outs[count+4] = GET_REGISTER_TAINT(vdst >> 12);
             	case 3:
             		outs[2] = GET_REGISTER((vdst & 0x0f00) >> 8);
+                    AI_PRINT_OUT_REG((vdst & 0x0f00) >> 8)
+                    AI_APPEND_REGI((vdst & 0x0f00) >> 8)
+
             		outs[count+3] = GET_REGISTER_TAINT((vdst & 0x0f00) >> 8);
             	case 2:
             		outs[1] = GET_REGISTER((vdst & 0x00f0) >> 4);
+                    AI_PRINT_OUT_REG((vdst & 0x00f0) >> 4)
+                    AI_APPEND_REGI((vdst & 0x00f0) >> 4)
+
             		outs[count+2] = GET_REGISTER_TAINT((vdst & 0x00f0) >> 4);
             	case 1:
             		outs[0] = GET_REGISTER(vdst & 0x0f);
+                    AI_PRINT_OUT_REG((vdst & 0x0f))
+                    AI_APPEND_REGI(vdst & 0x0f)
+
             		outs[count+1] = GET_REGISTER_TAINT(vdst & 0x0f);
             	default:
             		;
             	}
+
+            AI_BEGIN
+            // filter out calls into system funcs for now
+            // may change this behavior later
+            if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {
+                ALOGE("[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]",
+                    methodToCall->clazz->descriptor, methodToCall->name,
+                    count, aiArgs, methodToCall->registersSize, 
+                    curMethod->clazz->descriptor, curMethod->name);
+                fprintf(aiFile, "[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]\n",
+                    methodToCall->clazz->descriptor, methodToCall->name,
+                    count, aiArgs, methodToCall->registersSize, 
+                    curMethod->clazz->descriptor, curMethod->name);
+                fflush(aiFile);
+            }
+            AI_END
+
             	/* clear the native hack */
             	outs[count] = TAINT_CLEAR;
             } else { /* interpreted target */
