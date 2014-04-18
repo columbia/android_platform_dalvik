@@ -597,7 +597,7 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
             (strstr(curMethod->clazz->descriptor, "HelloAndroid") != NULL) || \
             (strstr(methodToCall->clazz->descriptor, "concolic") != NULL) || \
             (strstr(curMethod->clazz->descriptor, "concolic") != NULL)) {\
-            LOGE("[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
+            ALOGE("[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
             curMethod->clazz->descriptor, curMethod->name, curMethod->shorty, \
             methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty); \
             \
@@ -639,7 +639,7 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
 
 #define AI_LOGE_W_METHOD(format, ...) \
     AI_BEGIN \
-    LOGE(format "  -- [%s, %s]", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
+    ALOGE(format "  -- [%s, %s]", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
     fprintf(aiFile, format "  -- [%s, %s]\n", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
     fflush(aiFile); \
     AI_END
@@ -4640,7 +4640,7 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
             // filter out calls into system funcs for now
             // may change this behavior later
             if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {
-                LOGE("[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]",
+                ALOGE("[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]",
                     methodToCall->clazz->descriptor, methodToCall->name,
                     count, aiArgs, methodToCall->registersSize, 
                     curMethod->clazz->descriptor, curMethod->name);
