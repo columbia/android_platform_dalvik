@@ -855,7 +855,7 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
             		outs[count+5] = GET_REGISTER_TAINT(vsrc1 & 0x0f);
             	case 4:
             		outs[3] = GET_REGISTER(vdst >> 12);
-                    AI_PRINT_OUT_REG(vdst >> 12v)
+                    AI_PRINT_OUT_REG(vdst >> 12)
                     AI_APPEND_REGI(vdst >> 12)
 
             		outs[count+4] = GET_REGISTER_TAINT(vdst >> 12);
@@ -885,7 +885,7 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
             // filter out calls into system funcs for now
             // may change this behavior later
             if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {
-                LOGE("[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]",
+                ALOGE("[AI] [call] [%s %s] [%d args: %s] [%d regs] -- [%s %s]",
                     methodToCall->clazz->descriptor, methodToCall->name,
                     count, aiArgs, methodToCall->registersSize, 
                     curMethod->clazz->descriptor, curMethod->name);

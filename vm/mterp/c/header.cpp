@@ -21,6 +21,9 @@
 #include <math.h>                   // needed for fmod, fmodf
 #include "mterp/common/FindInterface.h"
 
+#include <stdio.h>
+FILE *aiFile;
+
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>

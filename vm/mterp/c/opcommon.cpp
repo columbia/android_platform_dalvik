@@ -698,7 +698,7 @@ GOTO_TARGET_DECL(exceptionThrown);
             AI_LOGE_W_METHOD("[AI] [assign] (= obj%p-%d v%d) [iput%s]",        \
                 obj, (int)ifield->byteOffset, vdst, (_opname))                \
             AI_LOGE_W_METHOD("[AI] [Debug] Registers %d", GET_REGISTER(vdst))   \
-        }   
+        }  \ 
         dvmSetField##_ftype(obj, ifield->byteOffset,                        \
             GET_REGISTER##_regsize(vdst));                                  \
         ILOGV("+ IPUT '%s'=0x%08llx", ifield->field.name,                   \
