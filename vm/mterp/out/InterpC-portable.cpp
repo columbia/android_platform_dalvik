@@ -28,6 +28,9 @@
 #include <math.h>                   // needed for fmod, fmodf
 #include "mterp/common/FindInterface.h"
 
+#include <stdio.h>
+FILE *aiFile;
+
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -574,6 +577,64 @@ static inline bool checkForNullExportPC(Object* obj, u4* fp, const u2* pc)
     return true;
 }
 
+#define AI_BEGIN do { if ((strstr(curMethod->clazz->descriptor, "HelloAndroid") != NULL) || \
+                          (strstr(curMethod->clazz->descriptor, "concolic") != NULL)) {
+#define AI_END }; } while (0);
+
+#define AI_FUNCTION_CALL \
+    do { \
+        if ((strstr(methodToCall->clazz->descriptor, "HelloAndroid") != NULL) || \
+            (strstr(curMethod->clazz->descriptor, "HelloAndroid") != NULL) || \
+            (strstr(methodToCall->clazz->descriptor, "concolic") != NULL) || \
+            (strstr(curMethod->clazz->descriptor, "concolic") != NULL)) {\
+            LOGE("[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
+            curMethod->clazz->descriptor, curMethod->name, curMethod->shorty, \
+            methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty); \
+            \
+            fprintf(aiFile, "[AI] [Debug] Function Call: -- [%s.%s %s]=>[%s.%s %s]\n", \
+            curMethod->clazz->descriptor, curMethod->name, curMethod->shorty, \
+            methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty); \
+            fflush(aiFile);   \
+        };\
+    } while (0)
+
+// convert (_op) into "_op", where _op is also a macro
+// thus we need a one-step indirection to expand _op before # it to a string
+#define AI_STR(foo) AI_TEMP(foo)
+#define AI_TEMP(foo) #foo
+
+#define AI_HASSTR(foo, bar) (strstr(foo, bar) != NULL)
+#define AI_NOT_HASSTR(foo, bar) (strstr(foo, bar) == NULL)
+#define AI_IS_SYSTEM_LIB(foo) (\
+    AI_HASSTR(foo, "com/android/") || \
+    AI_HASSTR(foo, "Ljava/") || \
+    AI_HASSTR(foo, "Ldalvik/") || \
+    AI_HASSTR(foo, "Lcom/ibm") || \
+    AI_HASSTR(foo, "Landroid"))
+
+// output the OUTS register (index), used in c/gotoTargets.c
+#define AI_PRINT_OUT_REG(_regIndex) \
+    AI_BEGIN \
+    do { \
+        /* note that only non-system calls will be dumped */ \
+        if (!AI_IS_SYSTEM_LIB(methodToCall->clazz->descriptor)) {\
+        fprintf(aiFile, "[AI] [Debug] Argument: v%d (#%x) [%s %s] => [%s %s]\n", \
+            (_regIndex), GET_REGISTER(_regIndex), \
+            curMethod->clazz->descriptor, curMethod->name, \
+            methodToCall->clazz->descriptor, methodToCall->name); \
+        fflush(aiFile); \
+        } \
+    } while (0);\
+    AI_END
+
+#define AI_LOGE_W_METHOD(format, ...) \
+    AI_BEGIN \
+    ALOGE(format "  -- [%s, %s]", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
+    fprintf(aiFile, format "  -- [%s, %s]\n", __VA_ARGS__, curMethod->clazz->descriptor, curMethod->name); \
+    fflush(aiFile); \
+    AI_END
+
+
 /* File: portable/stubdefs.cpp */
 /*
  * In the C mterp stubs, "goto" is a function call followed immediately
@@ -762,6 +823,7 @@ GOTO_TARGET_DECL(exceptionThrown);
         else                                                                \
             result = (_nanVal);                                             \
         ILOGV("+ result=%d", result);                                       \
+        AI_LOGE_W_METHOD("[AI] [assign] (= v%d (- v%d v%d)) [cmp%s]", vdst, vsrc1, vsrc2, (_opname)) \
         SET_REGISTER(vdst, result);                                         \
 /* ifdef WITH_TAINT_TRACKING */                                             \
         SET_REGISTER_TAINT(vdst, TAINT_CLEAR);				    \
