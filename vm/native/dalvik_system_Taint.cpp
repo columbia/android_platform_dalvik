@@ -26,6 +26,7 @@
 
 #include <errno.h>
 #include <stdint.h>
+#include <stdio.h>
 
 extern char *__progname;
 
@@ -33,6 +34,7 @@ extern char *__progname;
  * output activities ...) gathered from different component(Posix.java,
  * dalvikvmvm, frameworks ..) so that we can resolve the ordering issues. */
 uint64_t tm_counter = 0;
+FILE *aiFile;
 bool isTMeasureAPPFlag = false;
 
 #define TAINT_XATTR_NAME "user.taint"
