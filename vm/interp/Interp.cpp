@@ -24,6 +24,7 @@
  * Some debugger support functions are included here.
  */
 #include <stdio.h>
+#include <cstdlib>
 #include "Dalvik.h"
 #include "interp/InterpDefs.h"
 #if defined(WITH_JIT)
@@ -1981,85 +1982,95 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
 
     typedef void (*Interpreter)(Thread*);
     Interpreter stdInterp;
+    
     if (gDvm.executionMode == kExecutionModeInterpFast) {
       //jikk -- patch to force portable-interp for instrumentation  
       if (!__progname) 
 	      ALOGE("__porgname is not set");
-      if (!env) 
-	      ALOGE("environmental variable AND_INSTRUMENT is not set");
-
-      FILE *f = fopen("/data/local/tmp/instrumented", "r");
-      char line[256];
-      unsigned i;
-      if (f == NULL) {
-      	//fall to normal
-      	if (__progname && env && strcmp(__progname, env) == 0) {
-      	//ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)", 
-      	//      __progname, method->clazz->descriptor, method->name, self->threadId);
-	      isTMeasureAPPFlag = true;
-	      stdInterp = dvmInterpretPortable;
-      	} else {
-	      stdInterp = dvmMterpStd;
-      	}
-     } else {
-	if (fgets(line, 256, f) != NULL) {
-		fclose(f);
-		//convert '\n' to '\0'
-		for (i = 0; i < 256; i++) {
-			if (line[i] == '\n') {
-				line[i] = '\0';
-				break;
-			} else if (line[i] == '\0')
-				break;
-		}
-		if (__progname && line[0]!='\0' && strcmp(__progname, line) == 0) {
-	      		isTMeasureAPPFlag = true;
+      if (env) {
+		if (__progname && strcmp(__progname, env) == 0) {
+			isTMeasureAPPFlag = true;
 			stdInterp = dvmInterpretPortable;
 		} else {
 			stdInterp = dvmMterpStd;
 		}
-	}
+      } else {
+	        ALOGE("environmental variable AND_INSTRUMENT is not set");
+     		//read from file if there
+		FILE *f = fopen("/data/local/tmp/instrumented", "r");
+		if (f == NULL) {
+			//conservative
+			stdInterp = dvmMterpStd;
+		} else {
+			char line[256];
+			unsigned i;
+			if (fgets(line, 256, f) != NULL) {
+				fclose(f);
+				//convert '\n' to '\0'
+				for (i = 0; i < 256; i++) {
+					if (line[i] == '\n') {
+						line[i] = '\0';
+						break;
+					} else if (line[i] == '\0')
+						break;
+				}
+				setenv("AND_INSTRUMENT", line, true);
+				if (__progname && line[0] != '\0'
+					&& strcmp(__progname, line) ==0) {
+					
+					isTMeasureAPPFlag = true;
+					stdInterp = dvmInterpretPortable;
+				} else {
+					stdInterp = dvmMterpStd;
+				}
+			}
+		}
      }
-
 #if defined(WITH_JIT)
     } else if (gDvm.executionMode == kExecutionModeJit) {
         //jikk -- patch to enforce portable-interp for instrumentation  
       if (!__progname) 
         ALOGE("__porgname is not set");
-      if (!env) 
-        ALOGE("environmental variable AND_INSTRUMENT is not set");
-      FILE *f = fopen("/data/local/tmp/instrumented", "r");
-      char line[256];
-      unsigned i;
-      if (f == NULL) {
-      	//fall to normal
-      	if (__progname && env && strcmp(__progname, env) == 0) {
-      	//ALOGE("JIKK: setting interp:Fast --> interp:Portable for %s: %s, %s (tid: %d)", 
-      	//      __progname, method->clazz->descriptor, method->name, self->threadId);
-	      isTMeasureAPPFlag = true;
-	      stdInterp = dvmInterpretPortable;
-      	} else {
-	      stdInterp = dvmMterpStd;
-      	}
-     } else {
-	if (fgets(line, 256, f) != NULL) {
-		fclose(f);
-		//convert '\n' to '\0'
-		for (i = 0; i < 256; i++) {
-			if (line[i] == '\n') {
-				line[i] = '\0';
-				break;
-			} else if (line[i] == '\0')
-				break;
-		}
-		if (__progname && line[0]!='\0' && strcmp(__progname, line) == 0) {
-	      		isTMeasureAPPFlag = true;
+      if (env) {
+		if (__progname && strcmp(__progname, env) == 0) {
+			isTMeasureAPPFlag = true;
 			stdInterp = dvmInterpretPortable;
 		} else {
 			stdInterp = dvmMterpStd;
 		}
-	}
+      } else {
+	        ALOGE("environmental variable AND_INSTRUMENT is not set");
+     		//read from file if there
+		FILE *f = fopen("/data/local/tmp/instrumented", "r");
+		if (f == NULL) {
+			//conservative
+			stdInterp = dvmMterpStd;
+		} else {
+			char line[256];
+			unsigned i;
+			if (fgets(line, 256, f) != NULL) {
+				fclose(f);
+				//convert '\n' to '\0'
+				for (i = 0; i < 256; i++) {
+					if (line[i] == '\n') {
+						line[i] = '\0';
+						break;
+					} else if (line[i] == '\0')
+						break;
+				}
+				setenv("AND_INSTRUMENT", line, true);
+				if (__progname && line[0] != '\0'
+					&& strcmp(__progname, line) ==0) {
+					
+					isTMeasureAPPFlag = true;
+					stdInterp = dvmInterpretPortable;
+				} else {
+					stdInterp = dvmMterpStd;
+				}
+			}
+		}
      }
+
 #if 0
       if (__progname && env && strcmp(__progname, env) == 0) {
         //ALOGE("JIKK: setting interp:JIT --> interp:Portable for %s: %s, %s (tid: %d)", 
