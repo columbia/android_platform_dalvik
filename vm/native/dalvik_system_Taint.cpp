@@ -27,6 +27,8 @@
 #include <errno.h>
 #include <stdint.h>
 
+#include <stdio.h>
+
 extern char *__progname;
 
 /* tm_counter is used to assign unique identifier to events(branch choices,
@@ -1043,6 +1045,22 @@ static void Dalvik_dalvik_system_Taint_isTMeasureAPP(const u4*,  JValue* pResult
   RETURN_BOOLEAN(val);
 }
 
+static void Dalvik_dalvik_system_Taint_TMHashLog(const u4* args,  JValue* pResult) {
+	FILE *f;
+	StringObject* logEntryString = (StringObject*) args[0];
+	if (!logEntryString)
+		RETURN_VOID();
+	char *logEntry = dvmCreateCstrFromString(logEntryString);
+	char endl[] = "\n"; 
+	f = fopen("/data/local/tmp/logfile", "a");
+	if (f != NULL) {
+		fwrite(logEntry, sizeof(char), strlen(logEntry), f);
+		fwrite(endl, sizeof(char), strlen(endl), f);
+		fclose(f);
+	}
+	RETURN_VOID();
+}
+
 const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
     { "addTaintString",  "(Ljava/lang/String;I)V",
         Dalvik_dalvik_system_Taint_addTaintString},
@@ -1174,5 +1192,7 @@ const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
      Dalvik_dalvik_system_Taint_isTMeasureAPP},
     {"getNativeThreadId", "()I",
      Dalvik_dalvik_system_Taint_getThreadId},
+    { "TMHashLog",  "(Ljava/lang/String;)V",
+        Dalvik_dalvik_system_Taint_TMHashLog},
     { NULL, NULL, NULL },
 };
