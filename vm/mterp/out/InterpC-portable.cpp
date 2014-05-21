@@ -2692,6 +2692,7 @@ OP_END
 
 /* File: c/OP_INVOKE_SUPER.cpp */
 HANDLE_OPCODE(OP_INVOKE_SUPER /*vB, {vD, vE, vF, vG, vA}, meth@CCCC*/)
+    TMLOGE("| invokeSuper| ");
     GOTO_invoke(invokeSuper, false);
 OP_END
 
@@ -3774,7 +3775,7 @@ GOTO_TARGET(invokeVirtual, bool methodCallRange, bool)
             dvmDumpAllClasses(0);
         }
 #endif
-
+        TMLOGE("|invoke-Virtual|%s.%s|%s|", methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty);
         GOTO_invokeMethod(methodCallRange, methodToCall, vsrc1, vdst);
     }
 GOTO_TARGET_END
@@ -3852,7 +3853,7 @@ GOTO_TARGET(invokeSuper, bool methodCallRange)
             baseMethod->clazz->descriptor, baseMethod->name,
             methodToCall->clazz->descriptor, methodToCall->name);
         assert(methodToCall != NULL);
-
+        TMLOGE("|invoke-Super|%s.%s|%s|", methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty);
         GOTO_invokeMethod(methodCallRange, methodToCall, vsrc1, vdst);
     }
 GOTO_TARGET_END
@@ -3903,7 +3904,7 @@ GOTO_TARGET(invokeInterface, bool methodCallRange)
             assert(dvmCheckException(self));
             GOTO_exceptionThrown();
         }
-
+        TMLOGE("|invoke-Interface|%s.%s|%s|", methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty);
         GOTO_invokeMethod(methodCallRange, methodToCall, vsrc1, vdst);
     }
 GOTO_TARGET_END
@@ -3940,6 +3941,7 @@ GOTO_TARGET(invokeDirect, bool methodCallRange)
                 GOTO_exceptionThrown();
             }
         }
+        TMLOGE("|invoke-Direct|%s.%s|%s|", methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty);
         GOTO_invokeMethod(methodCallRange, methodToCall, vsrc1, vdst);
     }
 GOTO_TARGET_END
@@ -3979,6 +3981,7 @@ GOTO_TARGET(invokeStatic, bool methodCallRange)
         }
 #endif
     }
+    TMLOGE("|invoke-Static|%s.%s|%s|", methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty);
     GOTO_invokeMethod(methodCallRange, methodToCall, vsrc1, vdst);
 GOTO_TARGET_END
 
@@ -4037,6 +4040,7 @@ GOTO_TARGET(invokeVirtualQuick, bool methodCallRange)
             ref, methodToCall->clazz->descriptor, methodToCall->name);
         assert(methodToCall != NULL);
 
+        TMLOGE("|invoke-VirtualQuick|%s.%s|%s|", methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty);
         GOTO_invokeMethod(methodCallRange, methodToCall, vsrc1, vdst);
     }
 GOTO_TARGET_END
@@ -4096,6 +4100,7 @@ GOTO_TARGET(invokeSuperQuick, bool methodCallRange)
         LOGVV("+++ super-virtual[%d]=%s.%s",
             ref, methodToCall->clazz->descriptor, methodToCall->name);
         assert(methodToCall != NULL);
+        TMLOGE("|invoke-VirtualQ|%s.%s|%s|", methodToCall->clazz->descriptor, methodToCall->name, methodToCall->shorty);
         GOTO_invokeMethod(methodCallRange, methodToCall, vsrc1, vdst);
     }
 GOTO_TARGET_END

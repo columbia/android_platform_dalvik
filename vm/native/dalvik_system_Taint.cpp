@@ -30,6 +30,7 @@
 #include <stdio.h>
 
 extern char *__progname;
+char fpath[80];
 
 /* tm_counter is used to assign unique identifier to events(branch choices,
  * output activities ...) gathered from different component(Posix.java,
@@ -1002,6 +1003,28 @@ static void Dalvik_dalvik_system_Taint_logPathFromFd(const u4* args,
 }
 
 /*
+ * public static void logPathFromFdRetStr(int fd)
+ */
+
+static void Dalvik_dalvik_system_Taint_logPathFromFd_retStr(const u4* args,
+    JValue* pResult)
+{
+    int fd = (int) args[0];
+    pid_t pid;
+    char ppath[20]; // these path lengths should be enough
+    int err;
+
+    pid = getpid();
+    snprintf(ppath, 20, "/proc/%d/fd/%d", pid, fd);
+    err = readlink(ppath, fpath, 80);
+    if (err < 0) {
+        strcpy(fpath, "UNKNOWN");
+    }
+    StringObject* fobject = dvmCreateStringFromCstr(fpath);
+    RETURN_PTR(fobject);
+}
+
+/*
  * public static void logPeerFromFd(int fd)
  */
 static void Dalvik_dalvik_system_Taint_logPeerFromFd(const u4* args,
@@ -1046,19 +1069,19 @@ static void Dalvik_dalvik_system_Taint_isTMeasureAPP(const u4*,  JValue* pResult
 }
 
 static void Dalvik_dalvik_system_Taint_TMHashLog(const u4* args,  JValue* pResult) {
-	FILE *f;
-	StringObject* logEntryString = (StringObject*) args[0];
-	if (!logEntryString)
-		RETURN_VOID();
-	char *logEntry = dvmCreateCstrFromString(logEntryString);
-	char endl[] = "\n"; 
-	f = fopen("/data/local/tmp/logfile", "a");
-	if (f != NULL) {
-		fwrite(logEntry, sizeof(char), strlen(logEntry), f);
-		fwrite(endl, sizeof(char), strlen(endl), f);
-		fclose(f);
-	}
-	RETURN_VOID();
+    FILE *f;
+    StringObject* logEntryString = (StringObject*) args[0];
+    if (!logEntryString)
+        RETURN_VOID();
+    char *logEntry = dvmCreateCstrFromString(logEntryString);
+    char endl[] = "\n"; 
+    f = fopen("/data/local/tmp/logfile", "a");
+    if (f != NULL) {
+        fwrite(logEntry, sizeof(char), strlen(logEntry), f);
+        fwrite(endl, sizeof(char), strlen(endl), f);
+        fclose(f);
+    }
+    RETURN_VOID();
 }
 
 const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
@@ -1194,5 +1217,7 @@ const DalvikNativeMethod dvm_dalvik_system_Taint[] = {
      Dalvik_dalvik_system_Taint_getThreadId},
     { "TMHashLog",  "(Ljava/lang/String;)V",
         Dalvik_dalvik_system_Taint_TMHashLog},
+    {"logPathFromFdRetStr", "(I)Ljava/lang/String;",
+        Dalvik_dalvik_system_Taint_logPathFromFd_retStr},
     { NULL, NULL, NULL },
 };
