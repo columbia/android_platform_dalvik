@@ -1995,8 +1995,8 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
 			stdInterp = dvmMterpStd;
 		}
       } else {
-	        ALOGE("environmental variable AND_INSTRUMENT is not set");
-     		//read from file if there
+        //ALOGE("environmental variable AND_INSTRUMENT is not set");
+  		//read from file if there
 		FILE *f = fopen("/data/local/tmp/instrumented", "r");
 		if (f == NULL) {
 			//conservative
